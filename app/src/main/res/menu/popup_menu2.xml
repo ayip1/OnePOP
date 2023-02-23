@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id = "@+id/email"
+        android:icon = "@drawable/baseline_settings_24"
+        android:title = "Change Email"
+        />
+    <item
+        android:id = "@+id/password"
+        android:icon = "@drawable/baseline_settings_24"
+        android:title = "Change Password"
+        />
+    <item
+        android:id = "@+id/username"
+        android:icon = "@drawable/baseline_settings_24"
+        android:title = "Change Username"
+        />
+</menu>
