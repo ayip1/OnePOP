@@ -77,8 +77,9 @@
                     android:hint="Username"
                     android:padding="16dp"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/white"
-                    android:singleLine="true"/>
+                    android:textColorHint="#808080"
+                    android:singleLine="true"
+                    android:maxLength="254"/>
 
                 <EditText
                     android:id="@+id/password"
@@ -92,8 +93,9 @@
                     android:hint="Password"
                     android:padding="16dp"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/white"
-                    android:inputType="textPassword"/>
+                    android:textColorHint="#808080"
+                    android:inputType="textPassword"
+                    android:maxLength="254"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/loginbtn"

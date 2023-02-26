@@ -27,7 +27,7 @@ import java.sql.Types;
 public class Login extends AppCompatActivity {
     EditText username, password;
     MaterialButton loginbtn;
-    TextView signin, error;
+    TextView error;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,14 +35,13 @@ public class Login extends AppCompatActivity {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         loginbtn = (MaterialButton) findViewById(R.id.loginbtn);
-        signin = (TextView) findViewById(R.id.signin);
         error = (TextView) findViewById(R.id.loginerror);
 
         username.addTextChangedListener(textWatcher);
         password.addTextChangedListener(textWatcher);
         error.setVisibility(View.GONE);
         loginbtn.setEnabled(false);
-        loginbtn.setAlpha(.5f);
+        loginbtn.setAlpha(0.5f);
         loginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,6 +72,9 @@ public class Login extends AppCompatActivity {
             if (!text1.isEmpty() && !text2.isEmpty()) {
                 loginbtn.setEnabled(true);
                 loginbtn.setAlpha(1f);
+            } else {
+                loginbtn.setEnabled(false);
+                loginbtn.setAlpha(0.5f);
             }
         }
 
