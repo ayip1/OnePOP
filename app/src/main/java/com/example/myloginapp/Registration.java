@@ -46,8 +46,6 @@ public class Registration extends AppCompatActivity {
         signUpBtn.setEnabled(false);
         signUpBtn.setAlpha(0.5f);
 
-
-
         if (firstname!=null) {
             firstname.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
