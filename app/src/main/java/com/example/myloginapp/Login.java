@@ -28,10 +28,22 @@ public class Login extends AppCompatActivity {
     EditText username, password;
     MaterialButton loginbtn;
     TextView error;
+    private Session session;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        session = new Session(getApplicationContext());
+
+        Intent intent = new Intent(Login.this, Homepage.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (session.getUserID()!=-1) {
+            startActivity(intent);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         loginbtn = (MaterialButton) findViewById(R.id.loginbtn);
@@ -50,7 +62,10 @@ public class Login extends AppCompatActivity {
                 String passwordVal = password.getText().toString();
 
                 if (DatabaseHandler.verifyLogin(usernameVal, passwordVal)) {
-                    startActivity(new Intent( Login.this,Homepage.class));
+                    int userID = DatabaseHandler.getUserID(usernameVal);
+                    session.setUserID(userID);
+                    startActivity(intent);
+
                 } else {
                     error.setVisibility(View.VISIBLE);
                 }
