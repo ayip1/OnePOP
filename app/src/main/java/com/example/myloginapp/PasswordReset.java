@@ -49,14 +49,16 @@ public class PasswordReset extends AppCompatActivity {
                 //Send recovery instructions if email is registered within the database
                 String recoveryEmailVal = recoveryEmail.getText().toString();
 
-                if (!DatabaseHandler.uniqueEmail(recoveryEmailVal)) {
+                if (!DatabaseHandler.isUniqueEmail(recoveryEmailVal)) {
                     int userID = DatabaseHandler.getUserID(recoveryEmailVal);
-                    String fullname = DatabaseHandler.getFullName(userID);
-                    String username = DatabaseHandler.getUsername(userID);
+                    String firstName = DatabaseHandler.getUserColumn(userID,"first_name");
+                    String lastName = DatabaseHandler.getUserColumn(userID, "last_name");
+                    String fullName = firstName + " " + lastName;
+                    String username = DatabaseHandler.getUserColumn(userID,"username");
                     String newPassword = generateRandomPassword();
-                    DatabaseHandler.updatePassword(userID, newPassword);
+                    DatabaseHandler.updateUserColumn(userID, "password",newPassword);
 
-                    String messageToSend = "Hello, " + fullname +
+                    String messageToSend = "Hello, " + fullName +
                             "\nPlease use the following credentials to login:\n\n" +
                             "Username: " + username +
                             "\nPassword: " + newPassword +

@@ -137,7 +137,7 @@ public class Registration extends AppCompatActivity {
         String passwordVal = password.getText().toString();
         String passwordConfirmVal = passwordConfirm.getText().toString();
 
-        if (!DatabaseHandler.uniqueUsername(usernameVal)) {
+        if (!DatabaseHandler.isUniqueUsername(usernameVal)) {
             showError(username,"Username is taken!");
             return false;
         }
@@ -152,7 +152,7 @@ public class Registration extends AppCompatActivity {
             return false;
         }
 
-        if (!DatabaseHandler.uniqueEmail(emailVal)) {
+        if (!DatabaseHandler.isUniqueEmail(emailVal)) {
             showError(email, "Email is taken!");
             return false;
         }
