@@ -6,5 +6,14 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
+    <color name="gray">#3f4144</color>
+    <color name="light_gray">#5d5c61</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="purple_onepop">#8300a8</color>
+    <color name="orange_onepop">#cf3127</color>
+    <color name="blend_onepop">#b11c5a</color>
+    <color name="purple_primary">#413964</color>
+    <color name="purple_secondary">#352f54</color>
+
 </resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/bottom_nav_myreceipts"
+        android:title="My Receipts"
+        android:icon="@drawable/baseline_receipt_24"/>
+
+
+
+    <item
+        android:title=""/>
+
+    <item
+        android:id="@+id/bottom_nav_mygroups"
+        android:title="My Groups"
+        android:icon="@drawable/baseline_group_account_24" />
+
+
+</menu>

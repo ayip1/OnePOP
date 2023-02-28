@@ -33,13 +33,11 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         session = new Session(getApplicationContext());
-
-        Intent intent = new Intent(Login.this, Homepage.class);
+        Intent intent = new Intent(Login.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        if (session.getUserID()!=-1) {
+        if (DatabaseHandler.verifySession(session)) //Valid session already exists
             startActivity(intent);
-        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -61,11 +59,11 @@ public class Login extends AppCompatActivity {
                 String usernameVal = username.getText().toString();
                 String passwordVal = password.getText().toString();
 
-                if (DatabaseHandler.verifyLogin(usernameVal, passwordVal)) {
-                    int userID = DatabaseHandler.getUserID(usernameVal);
-                    session.setUserID(userID);
-                    startActivity(intent);
+                int userID = DatabaseHandler.verifyLogin(usernameVal, passwordVal);
 
+                if (userID!=-1) {
+                    session.set(userID, DatabaseHandler.getUserColumn(userID,"email"), passwordVal);
+                    startActivity(intent);
                 } else {
                     error.setVisibility(View.VISIBLE);
                 }

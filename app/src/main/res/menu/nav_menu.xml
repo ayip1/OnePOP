@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn = "navigation_view">
+
+    <group
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_myreciepts"
+            android:icon="@drawable/baseline_receipt_24"
+            android:title="My Receipts"/>
+
+        <item
+            android:id="@+id/nav_mygroups"
+            android:icon="@drawable/baseline_group_account_24"
+            android:title="My Groups"/>
+
+        <item
+            android:id="@+id/nav_myaccount"
+            android:icon="@drawable/baseline_manage_accounts_24"
+            android:title="Account"/>
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/baseline_info_24"
+            android:title="About Us"/>
+    </group>
+
+    <item
+        android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/baseline_logout_24"
+                android:title="Logout"/>
+        </menu>
+
+    </item>
+
+</menu>

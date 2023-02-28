@@ -4,7 +4,13 @@ import java.sql.*;
 
 public class DatabaseHandler {
 
-    public static boolean verifyLogin(String username, String password) {
+    /**
+     * Checks if a given user login is valid
+     * @param username of the user to check
+     * @param password of the user to check
+     * @return true if valid and false, otherwise
+     */
+    public static int verifyLogin(String username, String password) {
         ApplicationDB db = new ApplicationDB();
         Connection con = db.getConnection();
         CallableStatement cs;
@@ -17,16 +23,127 @@ public class DatabaseHandler {
             cs.executeQuery();
 
             int user_id = cs.getInt(3);
+
             con.close();
-            if (user_id>0) return true;
+
+            return user_id;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return false;
+        return -1;
     }
 
+    /**
+     * Checks if a given user session is valid by checking if the session
+     * email and password are consistent with the database.
+     * @param session of the user
+     * @return true if user email or password are consistent and false, otherwise.
+     */
+    public static boolean verifySession(Session session) {
+        int sessionUserID = session.getUserID();
+        if (sessionUserID==-1) //Invalid userID
+            return false;
+
+
+        String sessionEmail = session.getEmail();
+        String sessionPwd = session.getPassword();
+        String dbEmail = getUserColumn(sessionUserID, "email");
+        String dbPwd = getUserColumn(sessionUserID,"password");
+
+        if (!dbEmail.equals(sessionEmail) || !dbPwd.equals(sessionPwd))
+            return false;
+
+
+        return true;
+    }
+
+    /**
+     * Updates a column of a user with the specified ID
+     * @param userID the ID of the user to update
+     * @param columnName the name of the column to update (must be a valid column name of the "user" table)
+     * @param columnValue the new value for the column
+     * @throws IllegalArgumentException if an invalid columnName is provided
+     */
+    public static void updateUserColumn(int userID, String columnName, String columnValue) throws IllegalArgumentException {
+        String[] validColumns = {"email", "first_name", "last_name", "username", "password"};
+        boolean isValidColumn = false;
+        for (String column : validColumns) {
+            if (columnName.equals(column)) {
+                isValidColumn = true;
+                break;
+            }
+        }
+        if (!isValidColumn) {
+            throw new IllegalArgumentException("Invalid column name. Must be a valid column name of the 'user' table.");
+        }
+
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+
+        try {
+            String statement = "UPDATE user SET " + columnName + "=? WHERE user_id=?";
+            ps = con.prepareCall(statement);
+            ps.setString(1, columnValue);
+            ps.setInt(2, userID);
+            ps.execute();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Returns a column of a user with the specified userID
+     * @param userID the ID of the user to update
+     * @param columnName the name of the column to return (must be a valid column name of the "user" table)
+     * @throws IllegalArgumentException if an invalid columnName is provided
+     */
+    public static String getUserColumn(int userID, String columnName) throws IllegalArgumentException {
+        String[] validColumns = {"email", "first_name", "last_name", "username", "password"};
+        boolean isValidColumn = false;
+        for (String column : validColumns) {
+            if (columnName.toLowerCase().equals(column)) {
+                isValidColumn = true;
+                break;
+            }
+        }
+        if (!isValidColumn) {
+            throw new IllegalArgumentException("Invalid column name. Must be a valid column name of the 'user' table.");
+        }
+
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs;
+        String result = "";
+
+        try {
+            String statement = "SELECT " + columnName + " FROM user WHERE user_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, userID);
+            rs = ps.executeQuery();
+            if (rs.next()) result = rs.getString(1);
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    /**
+     * Inserts a tuple into the user table
+     * @param firstname the first name of the user to insert
+     * @param lastname the last name of the user to insert
+     * @param username the username of the user to insert
+     * @param password the password of the user to insert
+     * @param email the email of the user to insert
+     */
     public static void registerUser(String firstname, String lastname, String username, String password, String email) {
         ApplicationDB db = new ApplicationDB();
         Connection con = db.getConnection();
@@ -48,7 +165,12 @@ public class DatabaseHandler {
 
     }
 
-    public static boolean uniqueUsername(String username) {
+    /**
+     * Checks if a given username is unique within the user table
+     * @param username the username of the user to check
+     * @return true if unique and false, otherwise
+     */
+    public static boolean isUniqueUsername(String username) {
         ApplicationDB db = new ApplicationDB();
         Connection con = db.getConnection();
         PreparedStatement ps;
@@ -71,7 +193,12 @@ public class DatabaseHandler {
         return result;
     }
 
-    public static boolean uniqueEmail(String email) {
+    /**
+     * Checks if a given email is unique within the user table
+     * @param email the email of the user to check
+     * @return true if unique and false, otherwise
+     */
+    public static boolean isUniqueEmail(String email) {
         ApplicationDB db = new ApplicationDB();
         Connection con = db.getConnection();
         PreparedStatement ps;
@@ -94,6 +221,11 @@ public class DatabaseHandler {
         return result;
     }
 
+    /**
+     * Returns the userID of the user with the identifier
+     * @param identifier the identifier of the user to check (email or username)
+     * @return int of userID belonging to the identifier
+     */
     public static int getUserID(String identifier) {
         ApplicationDB db = new ApplicationDB();
         Connection con = db.getConnection();
@@ -118,109 +250,7 @@ public class DatabaseHandler {
 
         return userID;
     }
-    public static void updatePassword(int userID, String newPassword) {
-        ApplicationDB db = new ApplicationDB();
-        Connection con = db.getConnection();
-        PreparedStatement ps;
 
-        try {
-            String statement = "UPDATE user SET password=? WHERE user_id=?";
-            ps = con.prepareCall(statement);
-            ps.setString(1, newPassword);
-            ps.setInt(2, userID);
-            ps.execute();
-            con.close();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static String getUsername(int userID) {
-        ApplicationDB db = new ApplicationDB();
-        Connection con = db.getConnection();
-        PreparedStatement ps;
-        ResultSet rs;
-        String username = "";
-        try {
-            String statement = "SELECT username FROM user WHERE user_id=?";
-            ps = con.prepareCall(statement);
-            ps.setInt(1, userID);
-            rs = ps.executeQuery();
-            if (rs.next()) username = rs.getString(1);
-            con.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return username;
-    }
-
-    public static String getPassword(int userID) {
-        ApplicationDB db = new ApplicationDB();
-        Connection con = db.getConnection();
-        PreparedStatement ps;
-        ResultSet rs;
-        String password = "";
-        try {
-            String statement = "SELECT password FROM user WHERE user_id=?";
-            ps = con.prepareCall(statement);
-            ps.setInt(1, userID);
-            rs = ps.executeQuery();
-
-            if (rs.next()) password = rs.getString(1);
-
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return password;
-    }
-
-    public static String getEmail(int userID) {
-        ApplicationDB db = new ApplicationDB();
-        Connection con = db.getConnection();
-        PreparedStatement ps;
-        ResultSet rs;
-        String email = "";
-        try {
-            String statement = "SELECT email FROM user WHERE user_id=?";
-            ps = con.prepareCall(statement);
-            ps.setInt(1, userID);
-            rs = ps.executeQuery();
-
-            if (rs.next()) email = rs.getString(1);
-
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return email;
-    }
-    public static String getFullName(int userID) {
-        ApplicationDB db = new ApplicationDB();
-        Connection con = db.getConnection();
-        PreparedStatement ps;
-        ResultSet rs;
-        String fullname = "";
-        try {
-            String statement = "SELECT first_name, last_name FROM user WHERE user_id=?";
-            ps = con.prepareCall(statement);
-            ps.setInt(1, userID);
-            rs = ps.executeQuery();
-
-            if (rs.next()) fullname = rs.getString(1) + " " + rs.getString(2);
-
-            con.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return fullname;
-    }
 
 }
