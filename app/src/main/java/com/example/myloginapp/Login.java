@@ -35,7 +35,7 @@ public class Login extends AppCompatActivity {
         session = new Session(getApplicationContext());
 
         Intent intent = new Intent(Login.this, Homepage.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         if (session.getUserID()!=-1) {
             startActivity(intent);
