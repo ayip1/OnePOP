@@ -71,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         toggle.syncState();
 
+        //Set "My Receipts" as default fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_myreciepts);
             toolbar.setTitle("My Receipts");
         }
 
+        //Navigation Drawer Listener
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_myreciepts:
@@ -102,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        //Bottom Navigation Listener
         bottomNavigationView.setOnItemSelectedListener(item -> {
-
             if (item.getItemId() == R.id.bottom_nav_myreceipts) {
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.frame_layout, new MyReceiptsFragment(), "myreceipts").commit();
@@ -116,10 +118,10 @@ public class MainActivity extends AppCompatActivity {
                 navigationView.setCheckedItem(R.id.nav_mygroups);
                 toolbar.setTitle("My Groups");
             }
-
             return true;
         });
 
+        //Floating Action Button Listener
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
 
     private  void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -146,13 +147,30 @@ public class MainActivity extends AppCompatActivity {
         MyGroupsFragment groupFrag = (MyGroupsFragment) getSupportFragmentManager().findFragmentByTag("mygroups");
         if (groupFrag!=null && groupFrag.isVisible() ) {
             dialog.setContentView(R.layout.groupbottomsheetlayout);
+            LinearLayout createGroupLayout = dialog.findViewById(R.id.layoutCreateGroup);
+            LinearLayout joinGroup = dialog.findViewById(R.id.layoutJoinGroup);
+            createGroupLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+
+                }
+            });
+
+            joinGroup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+
+                }
+            });
+
         }
         else {
             dialog.setContentView(R.layout.bottomsheetlayout);
             LinearLayout folderLayout = dialog.findViewById(R.id.layoutFolder);
             LinearLayout uploadLayout = dialog.findViewById(R.id.layoutUpload);
             LinearLayout cameraLayout = dialog.findViewById(R.id.layoutCamera);
-
             folderLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
