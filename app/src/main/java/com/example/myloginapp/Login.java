@@ -36,7 +36,7 @@ public class Login extends AppCompatActivity {
         Intent intent = new Intent(Login.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        if (DatabaseHandler.verifySession(session)) //Valid session already exists
+        if (DatabaseHandler.isValidSession(session)) //Valid session already exists
             startActivity(intent);
 
         super.onCreate(savedInstanceState);

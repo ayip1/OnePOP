@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!DatabaseHandler.verifySession(session)) //Invalid Session
+        if (!DatabaseHandler.isValidSession(session)) //Invalid Session, return to login
             startActivity(new Intent(getApplicationContext(), Login.class));
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigationView);
@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
         toggle.syncState();
-
         //Set "My Receipts" as default fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
