@@ -13,7 +13,7 @@ public class ApplicationDB {
     String username, password, endpoint, port, database;
     public Connection getConnection() {
         //Create a connection string
-        endpoint = "database-1-instance-1.cimzy5vgsfiz.us-east-2.rds.amazonaws.com";
+        endpoint = "database-1.c3xlj8okoqmz.us-east-2.rds.amazonaws.com";
         port = "3306";
         database = "onepop";
         username = "admin";
