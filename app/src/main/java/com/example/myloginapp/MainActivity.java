@@ -8,9 +8,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -30,6 +34,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.ByteArrayOutputStream;
+
 public class MainActivity extends AppCompatActivity {
     private Session session;
     TextView navUsername,navEmail;
@@ -39,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     NavigationView navigationView;
     View headerView;
+    ImageView imageFrame;
+    Button openCamera;
+    String encImage;
+    private static final int pic_id = 123;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         headerView = (View) navigationView.getHeaderView(0);
         navUsername = (TextView) headerView.findViewById(R.id.nav_header_username);
         navEmail = (TextView) headerView.findViewById(R.id.nav_header_email);
+
 
         int userID = session.getUserID();
         String username = DatabaseHandler.getUserColumn(userID,"username");
@@ -130,6 +142,27 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Match the request 'pic id with requestCode
+        if (requestCode == pic_id) {
+            // BitMap is data structure of image file which store the image in memory
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+            // Set the image in imageview for display
+            imageFrame.setImageBitmap(photo);
+            //convert to base64
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG,100,baos);
+            byte[] b = baos.toByteArray();
+            encImage = Base64.encodeToString(b, Base64.DEFAULT);
+
+
+        }
     }
 
     private  void replaceFragment(Fragment fragment) {
@@ -190,7 +223,19 @@ public class MainActivity extends AppCompatActivity {
             cameraLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dialog.dismiss();
+                    //dialog.dismiss();
+
+                    setContentView(R.layout.activity_camera);
+
+                    openCamera = findViewById(R.id.camera_button);
+                    imageFrame = findViewById(R.id.click_image);
+
+                    openCamera.setOnClickListener(v2 -> {
+                        Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(camera_intent, pic_id);
+                    });
+
+
 
                 }
             });
