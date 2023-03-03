@@ -41,7 +41,7 @@ public class DatabaseHandler {
      * @param session of the user
      * @return true if user email or password are consistent and false, otherwise.
      */
-    public static boolean verifySession(Session session) {
+    public static boolean isValidSession(Session session) {
         int sessionUserID = session.getUserID();
         if (sessionUserID==-1) //Invalid userID
             return false;
