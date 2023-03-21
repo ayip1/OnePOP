@@ -94,7 +94,8 @@
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/baseline_camera_alt_24"/>
+                android:src="@drawable/baseline_camera_alt_24"
+                android:id="@+id/cameraButton"/>
 
             <TextView
                 android:layout_width="wrap_content"
