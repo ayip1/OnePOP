@@ -1,4 +1,4 @@
-package com.example.myloginapp.File;
+package com.example.myloginapp.Data;
 
 public class Address {
     private String street, city, state, zipCode;

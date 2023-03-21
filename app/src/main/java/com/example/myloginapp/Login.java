@@ -2,8 +2,6 @@ package com.example.myloginapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,18 +9,10 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.myloginapp.Database.DatabaseHandler;
+import com.example.myloginapp.Data.Session;
 import com.google.android.material.button.MaterialButton;
-
-import org.w3c.dom.Text;
-
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Types;
 
 public class Login extends AppCompatActivity {
     EditText username, password;

@@ -1,9 +1,10 @@
-package com.example.myloginapp.File;
+package com.example.myloginapp.Data;
 
 public class Receipt {
     private int id;
     private double total;
-    private String uploadDate, purchaseDate, barcode, store, address, payment, phone, category, blob;
+    private String uploadDate, purchaseDate, barcode, store, payment, phone, category, blob;
+    private Address address;
 
     public Receipt(Builder builder) {
         id = builder.id;
@@ -22,7 +23,8 @@ public class Receipt {
     public static class Builder {
         private int id;
         private double total;
-        private String uploadDate, purchaseDate, barcode, store, address, payment, phone, category, blob;
+        private String uploadDate, purchaseDate, barcode, store, payment, phone, category, blob;
+        private Address address;
 
         public Builder setMetaData(int id, String uploadDate, String category) {
             this.id = id;
@@ -43,7 +45,7 @@ public class Receipt {
             return this;
         }
 
-        public Builder setStoreData(String store, String address, String phone) {
+        public Builder setStoreData(String store, Address address, String phone) {
             this.store = store;
             this.address = address;
             this.phone = phone;
@@ -56,25 +58,15 @@ public class Receipt {
     }
 
     public int getID() { return id; }
-
     public double getTotal() { return total; }
-
     public String getUploadDate() { return uploadDate; }
-
     public String getPurchaseDate() { return purchaseDate; }
-
     public String getBarcode() { return barcode; }
-
     public String getStore() { return store; }
-
-    public String getAddress() { return address; }
-
+    public Address getAddress() { return address; }
     public String getPayment() { return payment; }
-
     public String getPhone() { return phone; }
-
     public String getCategory() { return category; }
-
     public String getBlob() { return blob; }
 
     public void setID(int id) { this.id = id; }
@@ -83,7 +75,7 @@ public class Receipt {
     public void setPurchaseDate(String purchaseDate) { this.purchaseDate = purchaseDate; }
     public void setBarcode(String barcode) { this.barcode = barcode; }
     public void setStore(String store) { this.store = store; }
-    public void setAddress(String address) {this.address = address}
+    public void setAddress(Address address) { this.address = address; }
 
 
 }

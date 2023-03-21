@@ -1,6 +1,4 @@
-package com.example.myloginapp.File;
-
-import com.example.myloginapp.R;
+package com.example.myloginapp.Data;
 
 import java.util.List;
 
@@ -38,12 +36,6 @@ public class Folder {
     }
 
     public void addChildReceipt(Receipt receipt) {
-        Receipt r = new Receipt.Builder().setMetaData(3,"d","d")
-                        .setBlob("3")
-                        .setReceiptData(1,"3","3","3","3")
-                        .setStoreData("3","3","3")
-                        .build();
-
         childReceipts.add(receipt);
     }
 }

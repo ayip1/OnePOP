@@ -1,4 +1,4 @@
-package com.example.myloginapp.Data;
+package com.example.myloginapp.Database;
 
 import android.os.StrictMode;
 

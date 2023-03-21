@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import com.example.myloginapp.Database.DatabaseHandler;
 import com.google.android.material.button.MaterialButton;
 import javax.mail.Message;
 import javax.mail.MessagingException;
