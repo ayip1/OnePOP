@@ -97,6 +97,17 @@ public class Registration extends AppCompatActivity {
             }
         });
 
+        firstname.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    lastname.requestFocus();
+                    return true;
+                }
+                return false;
+            }
+        });
+
     }
 
     private TextWatcher textWatcher = new TextWatcher() {
@@ -131,6 +142,7 @@ public class Registration extends AppCompatActivity {
     };
 
     private boolean validCredentials() {
+        String firstName = firstname.getText().toString().trim();
         String usernameVal = username.getText().toString().trim();
         String emailVal = email.getText().toString().trim();
         String passwordVal = password.getText().toString();
