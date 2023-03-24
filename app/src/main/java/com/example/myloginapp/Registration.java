@@ -97,16 +97,6 @@ public class Registration extends AppCompatActivity {
             }
         });
 
-        firstname.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    lastname.requestFocus();
-                    return true;
-                }
-                return false;
-            }
-        });
 
     }
 
@@ -142,48 +132,60 @@ public class Registration extends AppCompatActivity {
     };
 
     private boolean validCredentials() {
+        boolean result = true;
         String firstName = firstname.getText().toString().trim();
+        String lastName = lastname.getText().toString().trim();
         String usernameVal = username.getText().toString().trim();
         String emailVal = email.getText().toString().trim();
         String passwordVal = password.getText().toString();
         String passwordConfirmVal = passwordConfirm.getText().toString();
 
+        if (!firstName.matches("[a-zA-Z]+")) {
+            showError(firstname,"Name must only contain alphabetical characters!");
+            result = false;
+        }
+
+        if (!lastName.matches("[a-zA-Z]+")) {
+            showError(lastname,"Name must only contain alphabetical characters!");
+            result = false;
+        }
+
         if (!DatabaseHandler.isUniqueUsername(usernameVal)) {
             showError(username,"Username is taken!");
-            return false;
+            result = false;
         }
 
         if (!usernameVal.matches("^[a-zA-Z0-9]*$")) {
             showError(username,"Username cannot contain special characters!");
-            return false;
+            result = false;
         }
 
         if (usernameVal.length()<3) {
             showError(username,"Username must have 3 or more characters!");
-            return false;
+            result = false;
         }
 
         if (!DatabaseHandler.isUniqueEmail(emailVal)) {
             showError(email, "Email is taken!");
-            return false;
+            result = false;
         }
 
         if (!isEmailValid(emailVal)) {
             showError(email, "Invalid email address!");
-            return false;
+            result = false;
         }
 
         if (!passwordVal.equals(passwordConfirmVal)) {
             showError(passwordConfirm, "Password does not match!");
-            return false;
+            result = false;
         }
 
         if (passwordVal.length()<8) {
             showError(password, "Password must have 8 or more characters!");
-            return false;
+            result = false;
         }
 
-        return true;
+        return result;
 
     }
 
