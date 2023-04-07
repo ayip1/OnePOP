@@ -1,5 +1,7 @@
 package com.example.myloginapp;
 
+import static android.app.Activity.RESULT_CANCELED;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,27 +10,33 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.metrics.Event;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
 
+import android.app.Activity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -49,12 +57,18 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-//import java.net.HTTP.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import android.util.Base64;
+
+
 
 public class MainActivity extends AppCompatActivity {
     private Session session;
@@ -67,8 +81,10 @@ public class MainActivity extends AppCompatActivity {
     View headerView;
     ImageView imageFrame;
     ImageView openCamera;
-    String encImage;
+    private ProgressDialog loadingScreen;
+
     private static final int pic_id = 123;
+    public static final int PICK_IMAGE = 1;
 
 
     @Override
@@ -160,14 +176,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        // Loading Screen
+        loadingScreen = new ProgressDialog(this);
+        loadingScreen.setCancelable(false);
+        loadingScreen.setMessage("Loading...");
 
 
     }
 
+    public String convertImageToBase64(Uri uri) {
+        try {
+            //ContentResolver contentResolver = getContentResolver();
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            byte[] imageBytes = new byte[inputStream.available()];
+            inputStream.read(imageBytes);
+            inputStream.close();
+            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     ExecutorService mExecutor;// = Executors.newSingleThreadExecutor();
     Handler mHandler;// = new Handler(Looper.getMainLooper());
-
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -176,30 +208,72 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode != RESULT_CANCELED) {
             if (requestCode == pic_id) {
                 if (data != null) {
-                    System.out.println("this is what is in data: " + data.getExtras().get("data"));
-                    System.out.println("Picture was taken ------------------------------------------");
+
                     mExecutor = Executors.newSingleThreadExecutor();
                     mHandler = new Handler(Looper.getMainLooper());
+
                     Bitmap photo = (Bitmap) data.getExtras().get("data");
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     byte[] b = baos.toByteArray();
-                    encImage = Base64.encodeToString(b, Base64.DEFAULT);
-                    processInBg(encImage);
+                    String base64Image = Base64.encodeToString(b, Base64.DEFAULT);
+
+                    processInBg(base64Image);
+                    loadingScreen.show();
+
                 } else {
                     System.out.println("Pressed back");
                     return;
                 }
+            }
+            if (requestCode == PICK_IMAGE) {
+                Uri fileURI = data.getData();
+                String base64Image = convertImageToBase64(fileURI);
+
+                mExecutor = Executors.newSingleThreadExecutor();
+                mHandler = new Handler(Looper.getMainLooper());
+
+                processInBg(base64Image);
+                loadingScreen.show();
 
             }
         }
 
     }
 
-    // Create some member variables for the ExecutorService
-// and for the Handler that will update the UI from the main thread
+    public void updateUI(String receiptData) throws JSONException {
+        //convert string to json before interacting with it
+        JSONObject d = new JSONObject(receiptData);
 
+        setContentView(R.layout.activity_confirm_receipt_info);
+
+        EditText updateCategory = findViewById(R.id.category);
+        EditText updateDescription = findViewById(R.id.description);
+        EditText updateDate = findViewById(R.id.date);
+        EditText updateTotalPrice = findViewById(R.id.total_price);
+        EditText updatePayment = findViewById(R.id.payment_type);
+
+        if(d.has("category")) updateCategory.setText(d.getString("category"));
+        if(d.has("date")) updateDate.setText(d.getString("date"));
+        if(d.has("payment")) updatePayment.setText(d.getJSONObject("payment").getString("display_name"));
+        if(d.has("subtotal") && d.has("tax")) {
+            double totalPrice;
+            if(!d.isNull("subtotal") && !d.isNull("tax")) {
+                totalPrice = d.getDouble("subtotal") + d.getDouble("tax");
+                updateTotalPrice.setText(Double.toString(totalPrice));
+            }
+            else if (!d.isNull("subtotal") && d.isNull("tax")) {
+                totalPrice = d.getDouble("subtotal");
+                updateTotalPrice.setText(Double.toString(totalPrice));
+            }
+
+        } else if (d.has("subtotal") && !d.has("tax")) {
+            if(!d.isNull("subtotal")) updateTotalPrice.setText(Double.toString(d.getDouble("subtotal")));
+        }
+        if(d.has("vendor")) updateDescription.setText(d.getJSONObject("vendor").getString("name"));
+
+    }
 
     // Create an interface to respond with the result after processing
     public interface OnProcessedListener {
@@ -216,7 +290,15 @@ public class MainActivity extends AppCompatActivity {
                     public void run(){
                         // Update the UI here
                         //updateUi(result);
+
+                        loadingScreen.dismiss();
+
                         System.out.println(result);
+                        try {
+                            updateUI(result);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
 
                         //   category, store name, total, barcode number, date, payment method
                         //  .category
@@ -252,6 +334,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
+
+                //add error handling for network issues
 
                 // Use the interface to pass along the result
                 listener.onProcessed(result);
@@ -342,7 +426,15 @@ public class MainActivity extends AppCompatActivity {
             uploadLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+
                     dialog.dismiss();
+
 
                 }
             });
@@ -352,12 +444,14 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    setContentView(R.layout.bottomsheetlayout);
+                    //setContentView(R.layout.bottomsheetlayout);
 
                     openCamera = findViewById(R.id.cameraButton);
 
                     Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(camera_intent, pic_id);
+
+                    dialog.dismiss();
 
 
 

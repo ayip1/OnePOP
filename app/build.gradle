@@ -43,4 +43,6 @@ dependencies {
     implementation 'com.sun.mail:android-activation:1.6.4'
     implementation 'com.budjb:http-requests-bom:2.0.7'
 
+    implementation 'androidx.activity:activity:1.6.1'
+
 }
