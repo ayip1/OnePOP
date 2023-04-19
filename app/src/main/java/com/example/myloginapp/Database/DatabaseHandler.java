@@ -1,5 +1,7 @@
 package com.example.myloginapp.Database;
 
+import com.example.myloginapp.Data.Address;
+import com.example.myloginapp.Data.Receipt;
 import com.example.myloginapp.Data.Session;
 
 import java.sql.*;
@@ -252,6 +254,82 @@ public class DatabaseHandler {
 
         return userID;
     }
+
+    /**
+     * Returns the rootFolderID of the user with the identifier
+     * @param userID the identifier of the user
+     * @return int of rootFolderID belonging to the identifier
+     */
+    public static int getUserRootFolder(int userID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        CallableStatement cs;
+        ResultSet rs;
+        int rootFolderID = -1;
+
+        try {
+            cs = con.prepareCall("{call get_user_root_folder(?) }");
+            cs.setInt(1, userID);
+            rs = cs.executeQuery();
+
+            if (rs.next()) rootFolderID = rs.getInt(1);
+
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rootFolderID;
+    }
+
+    public static void insertReceipt(int folderID, Receipt receipt) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+
+        int userId = receipt.getUserID();
+        String uploadDate = receipt.getUploadDate();
+
+        double total = receipt.getTotal();
+        String purchaseDate = receipt.getPurchaseDate();
+        String barcode = receipt.getBarcode();
+        String payment = receipt.getPayment();
+        String category = receipt.getCategory();
+
+        String store = receipt.getStore();
+        String address = (receipt.getAddress()==null) ? "" : receipt.getAddress().toString();
+        String phone = receipt.getPhone();
+
+
+        String blob = receipt.getBlob();
+
+        try {
+            String statement = "INSERT INTO receipt (user_id, folder_id, upload_date, total, purchase_date, barcode, phone, store, address, payment, category)"
+                    + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            ps = con.prepareStatement(statement);
+            ps.setInt(1, userId);
+            ps.setInt(2, folderID);
+            ps.setString(3, uploadDate);
+            ps.setDouble(4, total);
+            ps.setString(5, purchaseDate);
+            ps.setString(6, barcode);
+            ps.setString(7, phone);
+            ps.setString(8, store);
+            ps.setString(9, address);
+            ps.setString(10, payment);
+            ps.setString(11, category);
+
+            ps.execute();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
 
 
 

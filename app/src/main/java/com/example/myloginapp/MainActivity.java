@@ -69,11 +69,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import android.util.Base64;
-
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
     private Session session;
+    int userID;
+    int rootFolderID;
+    int currentFolderID;
     TextView navUsername,navEmail;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
@@ -108,7 +111,10 @@ public class MainActivity extends AppCompatActivity {
         navEmail = (TextView) headerView.findViewById(R.id.nav_header_email);
 
 
-        int userID = session.getUserID();
+        userID = session.getUserID();
+        rootFolderID = DatabaseHandler.getUserRootFolder(userID);
+        currentFolderID = rootFolderID;
+
         String username = DatabaseHandler.getUserColumn(userID,"username");
         String email = DatabaseHandler.getUserColumn(userID,"email");
 
@@ -135,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     navigationView.setCheckedItem(R.id.nav_myreciepts);
                     toolbar.setTitle("My Receipts");
                     bottomNavigationView.getMenu().findItem(R.id.bottom_nav_myreceipts).setChecked(true);
+
                     break;
                 case R.id.nav_mygroups:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyGroupsFragment(), "mygroups").commit();
@@ -244,10 +251,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
     public void updateUI(String receiptData) throws JSONException {
         //convert string to json before interacting with it
         JSONObject d = new JSONObject(receiptData);
-
+        //startActivity(new Intent( this,PasswordReset.class));
         setContentView(R.layout.activity_confirm_receipt_info);
 
         EditText updateCategory = findViewById(R.id.category);
@@ -275,6 +283,15 @@ public class MainActivity extends AppCompatActivity {
         }
         if(d.has("vendor")) updateDescription.setText(d.getJSONObject("vendor").getString("name"));
 
+    } */
+
+    //Creates new ReceiptConfirmation Activity and forwards JSON data
+    public void updateUI(String receiptData) throws JSONException {
+        JSONObject receiptJSON = new JSONObject(receiptData);
+        Intent intent = new Intent(this, ReceiptConfirmation.class);
+        intent.putExtra("JSONString", receiptJSON.toString());
+        intent.putExtra("folderID", currentFolderID);
+        startActivity(intent);
     }
 
     // Create an interface to respond with the result after processing

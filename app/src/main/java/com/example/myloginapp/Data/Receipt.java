@@ -1,13 +1,13 @@
 package com.example.myloginapp.Data;
 
 public class Receipt {
-    private int id;
+    private int userId;
     private double total;
     private String uploadDate, purchaseDate, barcode, store, payment, phone, category, blob;
     private Address address;
 
     public Receipt(Builder builder) {
-        id = builder.id;
+        userId = builder.userId;
         total = builder.total;;
         uploadDate = builder.uploadDate;
         purchaseDate = builder.purchaseDate;
@@ -21,15 +21,14 @@ public class Receipt {
 
     }
     public static class Builder {
-        private int id;
+        private int userId;
         private double total;
         private String uploadDate, purchaseDate, barcode, store, payment, phone, category, blob;
         private Address address;
 
-        public Builder setMetaData(int id, String uploadDate, String category) {
-            this.id = id;
+        public Builder setMetaData(int userId, String uploadDate) {
+            this.userId = userId;
             this.uploadDate = uploadDate;
-            this.category = category;
             return this;
         }
 
@@ -37,11 +36,12 @@ public class Receipt {
             this.blob = blob;
             return this;
         }
-        public Builder setReceiptData(double total, String purchaseDate, String barcode, String payment, String category) {
+        public Builder setReceiptData(double total, String purchaseDate, String barcode, String payment, String category ) {
             this.total = total;
             this.purchaseDate = purchaseDate;
             this.barcode = barcode;
             this.payment = payment;
+            this.category = category;
             return this;
         }
 
@@ -57,7 +57,7 @@ public class Receipt {
         }
     }
 
-    public int getID() { return id; }
+    public int getUserID() { return userId; }
     public double getTotal() { return total; }
     public String getUploadDate() { return uploadDate; }
     public String getPurchaseDate() { return purchaseDate; }
@@ -69,7 +69,7 @@ public class Receipt {
     public String getCategory() { return category; }
     public String getBlob() { return blob; }
 
-    public void setID(int id) { this.id = id; }
+    public void setUserID(int userId) { this.userId = userId; }
     public void setTotal(double total) { this.total = total; }
     public void setUploadDate(String uploadDate) { this.uploadDate = uploadDate; }
     public void setPurchaseDate(String purchaseDate) { this.purchaseDate = purchaseDate; }
