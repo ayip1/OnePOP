@@ -1,5 +1,7 @@
 package com.example.myloginapp.Database;
 
+import android.database.Cursor;
+
 import com.example.myloginapp.Data.Address;
 import com.example.myloginapp.Data.Receipt;
 import com.example.myloginapp.Data.Session;
@@ -326,6 +328,25 @@ public class DatabaseHandler {
             e.printStackTrace();
         }
 
+    }
+
+    public static ResultSet getReceipts(int userID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+
+        try {
+            String statement = "SELECT * FROM receipt WHERE user_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, userID);
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
 
     }
 
