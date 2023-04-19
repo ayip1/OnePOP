@@ -3,7 +3,6 @@ package com.example.myloginapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,12 +12,12 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.myloginapp.Database.DatabaseHandler;
 
 public class Registration extends AppCompatActivity {
     EditText firstname, lastname, username, email, password, passwordConfirm;
@@ -98,6 +97,7 @@ public class Registration extends AppCompatActivity {
             }
         });
 
+
     }
 
     private TextWatcher textWatcher = new TextWatcher() {
@@ -132,47 +132,60 @@ public class Registration extends AppCompatActivity {
     };
 
     private boolean validCredentials() {
+        boolean result = true;
+        String firstName = firstname.getText().toString().trim();
+        String lastName = lastname.getText().toString().trim();
         String usernameVal = username.getText().toString().trim();
         String emailVal = email.getText().toString().trim();
         String passwordVal = password.getText().toString();
         String passwordConfirmVal = passwordConfirm.getText().toString();
 
+        if (!firstName.matches("[a-zA-Z]+")) {
+            showError(firstname,"Name must only contain alphabetical characters!");
+            result = false;
+        }
+
+        if (!lastName.matches("[a-zA-Z]+")) {
+            showError(lastname,"Name must only contain alphabetical characters!");
+            result = false;
+        }
+
         if (!DatabaseHandler.isUniqueUsername(usernameVal)) {
             showError(username,"Username is taken!");
-            return false;
+            result = false;
         }
 
         if (!usernameVal.matches("^[a-zA-Z0-9]*$")) {
             showError(username,"Username cannot contain special characters!");
-            return false;
+            result = false;
         }
 
         if (usernameVal.length()<3) {
             showError(username,"Username must have 3 or more characters!");
-            return false;
+            result = false;
         }
 
         if (!DatabaseHandler.isUniqueEmail(emailVal)) {
             showError(email, "Email is taken!");
-            return false;
+            result = false;
         }
 
         if (!isEmailValid(emailVal)) {
             showError(email, "Invalid email address!");
-            return false;
+            result = false;
         }
 
         if (!passwordVal.equals(passwordConfirmVal)) {
             showError(passwordConfirm, "Password does not match!");
-            return false;
+            result = false;
         }
 
         if (passwordVal.length()<8) {
             showError(password, "Password must have 8 or more characters!");
-            return false;
+            result = false;
         }
 
-        return true;
+        return result;
 
     }
 

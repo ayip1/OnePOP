@@ -108,7 +108,7 @@
                 android:textColorHint="#808080"
                 android:singleLine="true"
                 android:maxLength="254"/>
-            
+
         </LinearLayout>
         <Button
             android:id="@+id/save_receipt_details"

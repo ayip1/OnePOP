@@ -6,7 +6,13 @@
     tools:context=".MyAccountFragment"
     android:background="@color/purple_secondary">
 
-    <!-- TODO: Update blank fragment layout -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+    <!-- TODO: Update blank fragment layout
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,5 +20,5 @@
         android:gravity="center"
         android:textSize="30sp"
         android:textColor="@color/white"/>
-
+    -->
 </FrameLayout>

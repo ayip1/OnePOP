@@ -1,4 +1,6 @@
-package com.example.myloginapp;
+package com.example.myloginapp.Database;
+
+import com.example.myloginapp.Data.Session;
 
 import java.sql.*;
 
