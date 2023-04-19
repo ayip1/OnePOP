@@ -7,12 +7,71 @@
     android:background="@color/purple_secondary">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="My Receipts"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textColor="@color/white"/>
+        android:layout_height="match_parent">
+        <TableLayout
+            android:id="@+id/table_receipt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <TableRow
+                android:background="@color/purple_onepop">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:text="Upload Date"
+                    android:textColor="@color/white"
+                    android:padding="10sp"
+                    android:textSize="14sp"
+                    android:gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:text="Category"
+                    android:textColor="@color/white"
+                    android:padding="10sp"
+                    android:textSize="14sp"
+                    android:gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:text="Store"
+                    android:textColor="@color/white"
+                    android:padding="10sp"
+                    android:textSize="14sp"
+                    android:gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:text="Total"
+                    android:textColor="@color/white"
+                    android:padding="10sp"
+                    android:textSize="14sp"
+                    android:gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:text="Purchase Date"
+                    android:textColor="@color/white"
+                    android:padding="10sp"
+                    android:textSize="14sp"
+                    android:gravity="center_horizontal"/>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:text="Payment"
+                    android:textColor="@color/white"
+                    android:padding="10sp"
+                    android:textSize="14sp"
+                    android:gravity="center_horizontal"/>
+            </TableRow>
+        </TableLayout>
+
+    </HorizontalScrollView>
+
+
+
 
 </FrameLayout>

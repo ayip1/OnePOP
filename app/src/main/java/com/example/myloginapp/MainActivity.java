@@ -487,6 +487,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        // Do Here what ever you want do on back press;
+    }
 
 }
