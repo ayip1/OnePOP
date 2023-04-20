@@ -141,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                     navigationView.setCheckedItem(R.id.nav_myreciepts);
                     toolbar.setTitle("My Receipts");
                     bottomNavigationView.getMenu().findItem(R.id.bottom_nav_myreceipts).setChecked(true);
-
                     break;
                 case R.id.nav_mygroups:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyGroupsFragment(), "mygroups").commit();
@@ -193,19 +192,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public String convertImageToBase64(Uri uri) {
-        try {
-            //ContentResolver contentResolver = getContentResolver();
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            byte[] imageBytes = new byte[inputStream.available()];
-            inputStream.read(imageBytes);
-            inputStream.close();
-            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     ExecutorService mExecutor;// = Executors.newSingleThreadExecutor();
     Handler mHandler;// = new Handler(Looper.getMainLooper());
@@ -294,6 +280,20 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public String convertImageToBase64(Uri uri) {
+        try {
+            //ContentResolver contentResolver = getContentResolver();
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            byte[] imageBytes = new byte[inputStream.available()];
+            inputStream.read(imageBytes);
+            inputStream.close();
+            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // Create an interface to respond with the result after processing
     public interface OnProcessedListener {
         public void onProcessed(String result);
@@ -374,8 +374,10 @@ public class MainActivity extends AppCompatActivity {
         HttpPost post = new HttpPost( "https://api.veryfi.com/api/v8/partner/documents" );
         post.addHeader( "Content-Type", "application/json" );
         post.addHeader( "Accept", "application/json" );
-        post.addHeader("CLIENT-ID", "vrfkShpCnrpmGGnFKEFiP4g8A58fLjLukGRjpIM");
-        post.addHeader("AUTHORIZATION", "apikey veryfi11:050fb329fdbfcaaeb720671fa0ef582c");
+        //post.addHeader("CLIENT-ID", "vrfkShpCnrpmGGnFKEFiP4g8A58fLjLukGRjpIM");
+        //post.addHeader("AUTHORIZATION", "apikey veryfi11:050fb329fdbfcaaeb720671fa0ef582c");
+        post.addHeader("CLIENT-ID", "vrfO4gFBl1b3T6PrwSj3ax9psgPHLHrsiMXEbnY");
+        post.addHeader("AUTHORIZATION", "apikey jaeyul.dl:caf84bc5c54d7bd39058385fc83c0532");
         JSONObject requestBody = new JSONObject();
         requestBody.put("file_name", fileName);
         requestBody.put("file_data", fileData);

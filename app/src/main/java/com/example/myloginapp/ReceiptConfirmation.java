@@ -1,7 +1,10 @@
 package com.example.myloginapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +19,12 @@ import com.example.myloginapp.Database.DatabaseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 
 public class ReceiptConfirmation extends AppCompatActivity {
@@ -40,15 +49,24 @@ public class ReceiptConfirmation extends AppCompatActivity {
         updatePayment = findViewById(R.id.payment_type);
         confirmReceipt = findViewById(R.id.save_receipt_details);
 
+        //byte[] imageData = getIntent().getByteArrayExtra("imageData");
+        byte[] imageData = null;
+        byte[] thumbnailData = null;
         String JSONString = getIntent().getStringExtra("JSONString");
 
         try {
             JSONObject receiptJSON = new JSONObject(JSONString);
             autofillForm(receiptJSON);
+            imageData = grabFullImage(receiptJSON);
+            thumbnailData = grabThumbnail(receiptJSON);
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
+        byte[] finalImageData = imageData;
+        byte[] finalThumbnailData = thumbnailData;
         confirmReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,7 +91,7 @@ public class ReceiptConfirmation extends AppCompatActivity {
                         .setMetaData(userID, currentDate)
                         .setReceiptData(total, purchaseDate, null, payMethod, category)
                         .setStoreData(store, null, null)
-                        .setBlob(null)
+                        .setImageData(finalImageData, finalThumbnailData)
                         .build();
 
                 int folderID = getIntent().getIntExtra("folderID", -1);
@@ -106,4 +124,37 @@ public class ReceiptConfirmation extends AppCompatActivity {
         }
         if(j.has("vendor")) updateDescription.setText(j.getJSONObject("vendor").getString("name"));
     }
+
+    private byte[] grabThumbnail(JSONObject j) throws JSONException, IOException {
+        String imageUrlString = j.getString("img_thumbnail_url");
+        URL imageUrl = new URL(imageUrlString);
+        HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+        connection.setDoInput(true);
+        connection.connect();
+        InputStream input = connection.getInputStream();
+
+        Bitmap bitmap = BitmapFactory.decodeStream(input);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageData = baos.toByteArray();
+
+        return imageData;
+    }
+
+    private byte[] grabFullImage(JSONObject j) throws JSONException, IOException {
+        String imageUrlString = j.getString("img_url");
+        URL imageUrl = new URL(imageUrlString);
+        HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+        connection.setDoInput(true);
+        connection.connect();
+        InputStream input = connection.getInputStream();
+
+        Bitmap bitmap = BitmapFactory.decodeStream(input);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageData = baos.toByteArray();
+
+        return imageData;
+    }
+
 }

@@ -303,12 +303,14 @@ public class DatabaseHandler {
         String address = (receipt.getAddress()==null) ? "" : receipt.getAddress().toString();
         String phone = receipt.getPhone();
 
-
-        String blob = receipt.getBlob();
+        byte[] imageData = receipt.getImageData();
+        byte[] thumbnailData = receipt.getThumbnailData();
 
         try {
-            String statement = "INSERT INTO receipt (user_id, folder_id, upload_date, total, purchase_date, barcode, phone, store, address, payment, category)"
-                    + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String statement = "INSERT INTO receipt (user_id, folder_id, upload_date, total, purchase_date, barcode, phone, store, address, payment, category, img, thumbnail)"
+                    + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            //String statement = "INSERT INTO receipt (user_id, folder_id, upload_date, total, purchase_date, barcode, phone, store, address, payment, category)"
+            //        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             ps = con.prepareStatement(statement);
             ps.setInt(1, userId);
             ps.setInt(2, folderID);
@@ -321,6 +323,8 @@ public class DatabaseHandler {
             ps.setString(9, address);
             ps.setString(10, payment);
             ps.setString(11, category);
+            ps.setBytes(12, imageData);
+            ps.setBytes(13, thumbnailData);
 
             ps.execute();
             con.close();

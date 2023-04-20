@@ -1,5 +1,8 @@
 package com.example.myloginapp;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,9 +12,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myloginapp.Data.Session;
 import com.example.myloginapp.Database.DatabaseHandler;
@@ -92,14 +97,19 @@ public class MyReceiptsFragment extends Fragment {
                 while (rs.next()) {
                     TableRow row = new TableRow(getContext());
                     int paddingPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics());
-                    TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT, 1f);
+
+
+                    byte[] thumbnailData = rs.getBytes(14);
+                    ImageView receipt = new ImageView(getContext());
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(thumbnailData, 0, thumbnailData.length);
+                    receipt.setImageBitmap(bitmap);
+                    row.addView(receipt);
 
                     TextView upload = new TextView(getContext());
                     upload.setText(rs.getString(4));
                     upload.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
                     upload.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                     upload.setGravity(Gravity.CENTER_HORIZONTAL);
-                    upload.setLayoutParams(layoutParams);
                     row.addView(upload);
 
                     TextView category = new TextView(getContext());
@@ -107,12 +117,9 @@ public class MyReceiptsFragment extends Fragment {
                     category.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
                     category.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                     category.setGravity(Gravity.CENTER_HORIZONTAL);
-                    category.setLayoutParams(layoutParams);
-
                     row.addView(category);
 
                     TextView store = new TextView(getContext());
-                    store.setLayoutParams(layoutParams);
                     store.setText(rs.getString(9));
                     store.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
                     store.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -120,7 +127,6 @@ public class MyReceiptsFragment extends Fragment {
                     row.addView(store);
 
                     TextView total = new TextView(getContext());
-                    total.setLayoutParams(layoutParams);
                     total.setText(rs.getString(5));
                     total.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
                     total.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -128,7 +134,6 @@ public class MyReceiptsFragment extends Fragment {
                     row.addView(total);
 
                     TextView purchase = new TextView(getContext());
-                    purchase.setLayoutParams(layoutParams);
                     purchase.setText(rs.getString(6));
                     purchase.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
                     purchase.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -136,14 +141,19 @@ public class MyReceiptsFragment extends Fragment {
                     row.addView(purchase);
 
                     TextView payment = new TextView(getContext());
-                    payment.setLayoutParams(layoutParams);
                     payment.setText(rs.getString(11));
                     payment.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
                     payment.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                     payment.setGravity(Gravity.CENTER_HORIZONTAL);
                     row.addView(payment);
-
                     tableLayout.addView(row);
+
+
+                    View separator  = new View(getContext());
+                    separator.setBackgroundColor(Color.BLACK);
+                    separator.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 2));
+                    tableLayout.addView(separator);
+
                 }
                 rs.close();
                 break;
