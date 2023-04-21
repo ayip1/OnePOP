@@ -421,6 +421,53 @@ public class DatabaseHandler {
 
     }
 
+    public static int getParentFolderID(int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+        int parentFolderID = -1;
+
+        try {
+            String statement = "SELECT parent_folder_id FROM folder WHERE folder_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, folderID);
+            rs = ps.executeQuery();
+
+            if (rs.next()) parentFolderID = rs.getInt(1);
+
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return parentFolderID;
+    }
+
+    public static String getFolderName(int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+        String name = "";
+
+        try {
+            String statement = "SELECT folder_name FROM folder WHERE folder_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, folderID);
+            rs = ps.executeQuery();
+
+            if (rs.next()) name = rs.getString(1);
+
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return name;
+    }
 
 
 }

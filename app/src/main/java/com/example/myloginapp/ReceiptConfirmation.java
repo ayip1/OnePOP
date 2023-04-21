@@ -97,9 +97,8 @@ public class ReceiptConfirmation extends AppCompatActivity {
                 int folderID = getIntent().getIntExtra("folderID", -1);
                 DatabaseHandler.insertReceipt(folderID, receipt);
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                setResult(RESULT_OK);
+                finish();
             }
         });
     }
@@ -156,5 +155,7 @@ public class ReceiptConfirmation extends AppCompatActivity {
 
         return imageData;
     }
+
+
 
 }

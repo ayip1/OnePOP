@@ -10,6 +10,8 @@ import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -134,7 +136,9 @@ public class MyReceiptsFragment extends Fragment {
                     dialog.show();
                 } else {
                     Folder folder = (Folder) tag;
-
+                    mainActivity.currentFolderID =folder.getID();
+                    mainActivity.parentFolderID = folder.getParentID();
+                    mainActivity.replaceFragment(new MyReceiptsFragment());
                 }
 
 
@@ -147,6 +151,7 @@ public class MyReceiptsFragment extends Fragment {
     }
 
     private void populateFragment() {
+        mainActivity.toolbar.setTitle(mainActivity.getHeader());
 
         try {
             while (foldersRs.next()) {
@@ -194,7 +199,6 @@ public class MyReceiptsFragment extends Fragment {
         grid.setAdapter(adapter);
 
     }
-
 
 
 

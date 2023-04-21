@@ -73,16 +73,18 @@ import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE = 1;
     public Session session;
     public int userID;
     public int currentOrgID;
     public int rootFolderID;
+    public int parentFolderID;
     public int currentFolderID;
     TextView navUsername,navEmail;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
-    Toolbar toolbar;
+    public Toolbar toolbar;
     NavigationView navigationView;
     View headerView;
     ImageView imageFrame;
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         userID = session.getUserID();
         rootFolderID = DatabaseHandler.getUserRootFolder(userID);
         currentFolderID = rootFolderID;
+        parentFolderID = -1;
         currentOrgID = -1;
 
         String username = DatabaseHandler.getUserColumn(userID,"username");
@@ -201,6 +204,16 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Refresh the activity as needed
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
+                navigationView.setCheckedItem(R.id.nav_myreciepts);
+                toolbar.setTitle(getHeader());
+            }
+        }
+
         //System.out.println("onActivityResult was hit ------------------------------------------");
         //System.out.println("this is what is in data: " + data.getExtras().get("data"));
         if (resultCode != RESULT_CANCELED) {
@@ -400,9 +413,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private  void replaceFragment(Fragment fragment) {
+    public void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
@@ -463,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
                             DatabaseHandler.insertFolder(ownerID, currentFolderID, folderName, isOrg);
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
                             navigationView.setCheckedItem(R.id.nav_myreciepts);
-                            toolbar.setTitle("My Receipts");
+                            toolbar.setTitle(getHeader());
 
                         }
                     });
@@ -527,6 +541,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         // Do Here what ever you want do on back press;
+        if (currentFolderID!=rootFolderID) {
+            currentFolderID = parentFolderID;
+            parentFolderID = DatabaseHandler.getParentFolderID(currentFolderID);
+            replaceFragment(new MyReceiptsFragment());
+
+        }
+
     }
+
+    public String getHeader() {
+        String header = "";
+        if (currentFolderID==rootFolderID) {
+            header = "My Receipts";
+        }
+        else if (currentFolderID!=-1) {
+            header =  DatabaseHandler.getFolderName(currentFolderID);
+        }
+        //else org
+        return header;
+    }
+
 
 }
