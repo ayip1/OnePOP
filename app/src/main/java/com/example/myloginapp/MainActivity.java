@@ -461,6 +461,9 @@ public class MainActivity extends AppCompatActivity {
                             int ownerID = (currentOrgID==-1) ? userID : currentOrgID;
                             boolean isOrg = (currentOrgID==-1) ? true : false;
                             DatabaseHandler.insertFolder(ownerID, currentFolderID, folderName, isOrg);
+                            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
+                            navigationView.setCheckedItem(R.id.nav_myreciepts);
+                            toolbar.setTitle("My Receipts");
 
                         }
                     });

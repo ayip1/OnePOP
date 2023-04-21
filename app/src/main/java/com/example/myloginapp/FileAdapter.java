@@ -38,7 +38,7 @@ public class FileAdapter extends ArrayAdapter<CardView> {
         Object tag = cardView.getTag();
         if (tag instanceof Receipt) {
             Receipt receipt = (Receipt) tag;
-            filename.setText(receipt.getStore());
+            filename.setText(receipt.getStore()+" - " + receipt.getPurchaseDate());
 
             byte[] thumbnailData = receipt.getThumbnailData();
             Bitmap bitmap = BitmapFactory.decodeByteArray(thumbnailData, 0, thumbnailData.length);

@@ -123,6 +123,11 @@ public class MyReceiptsFragment extends Fragment {
                         @Override
                         public void onClick(View view) {
                             Intent i = new Intent(getContext(),  Fullview.class);
+                            byte[] thumbnailData = receipt.getImageData();
+
+                            i.putExtra("imageData", thumbnailData);
+
+                            startActivity(i);
                         }
                     });
 
@@ -162,10 +167,10 @@ public class MyReceiptsFragment extends Fragment {
                 double total = receiptsRs.getDouble(5);
                 String purchaseDate = receiptsRs.getString(6);
                 String store = receiptsRs.getString(9);
-                String payment = receiptsRs.getString(10);
-                String category = receiptsRs.getString(11);
-                byte[] fullImgData = receiptsRs.getBytes(12);
-                byte[] thumbnailData = receiptsRs.getBytes(13);
+                String payment = receiptsRs.getString(11);
+                String category = receiptsRs.getString(12);
+                byte[] fullImgData = receiptsRs.getBytes(13);
+                byte[] thumbnailData = receiptsRs.getBytes(14);
 
                 Receipt receiptData = new Receipt.Builder()
                         .setMetaData(userID, uploadDate)
