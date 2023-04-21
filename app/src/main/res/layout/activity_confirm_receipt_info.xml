@@ -61,6 +61,62 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Address"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"/>
+        <EditText
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#38ffffff"
+            android:hint="Address"
+            android:padding="16dp"
+            android:textColor="@color/white"
+            android:textColorHint="#808080"
+            android:singleLine="true"
+            android:maxLength="254"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Barcode, Phone Number"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/barcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginRight="8dp"
+                android:background="#38ffffff"
+                android:hint="Barcode Data"
+                android:padding="16dp"
+                android:textColor="@color/white"
+                android:textColorHint="#808080"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:maxLength="254"/>
+            <EditText
+                android:id="@+id/phone_number"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="8dp"
+                android:background="#38ffffff"
+                android:hint="Phone Number"
+                android:padding="16dp"
+                android:textColor="@color/white"
+                android:textColorHint="#808080"
+                android:singleLine="true"
+                android:maxLength="254"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Date, Total Price, Payment Method"
             android:layout_marginTop="10dp"
             android:textColor="@color/white"/>
