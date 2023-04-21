@@ -94,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int pic_id = 123;
     public static final int PICK_IMAGE = 1;
 
+    String client_id = "vrfvlujbskjd9dsDpZLWJznmRIaLZ5yKwXNL1HB";
+    String authorization = "apikey veryfi21:f7403c7c99c862d549191dae1b76e4cc";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -265,6 +268,9 @@ public class MainActivity extends AppCompatActivity {
         EditText updateDate = findViewById(R.id.date);
         EditText updateTotalPrice = findViewById(R.id.total_price);
         EditText updatePayment = findViewById(R.id.payment_type);
+        EditText updateAddress = findViewById(R.id.address);
+        EditText updatePhoneNumber = findViewById(R.id.phone_number);
+        EditText updateBarcode = findViewById(R.id.barcode);
 
         if(d.has("category")) updateCategory.setText(d.getString("category"));
         if(d.has("date")) updateDate.setText(d.getString("date"));
@@ -284,6 +290,11 @@ public class MainActivity extends AppCompatActivity {
             if(!d.isNull("subtotal")) updateTotalPrice.setText(Double.toString(d.getDouble("subtotal")));
         }
         if(d.has("vendor")) updateDescription.setText(d.getJSONObject("vendor").getString("name"));
+        if(d.has("vendor")) updateAddress.setText(d.getJSONObject("vendor").getString("address"));
+        if(d.has("vendor")) updatePhoneNumber.setText(d.getJSONObject("vendor").getString("phone_number"));
+        if(d.has("document_reference_number")) updateBarcode.setText(d.getString("document_reference_number"));
+
+
 
     } */
 
@@ -382,6 +393,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public String processReceipt(String base64Image) throws IOException, JSONException {
+
+
+
         System.out.println("processReceipt() function called");
         String fileName = "test";
         String fileData = base64Image;
@@ -390,10 +404,8 @@ public class MainActivity extends AppCompatActivity {
         HttpPost post = new HttpPost( "https://api.veryfi.com/api/v8/partner/documents" );
         post.addHeader( "Content-Type", "application/json" );
         post.addHeader( "Accept", "application/json" );
-        //post.addHeader("CLIENT-ID", "vrfkShpCnrpmGGnFKEFiP4g8A58fLjLukGRjpIM");
-        //post.addHeader("AUTHORIZATION", "apikey veryfi11:050fb329fdbfcaaeb720671fa0ef582c");
-        post.addHeader("CLIENT-ID", "vrfO4gFBl1b3T6PrwSj3ax9psgPHLHrsiMXEbnY");
-        post.addHeader("AUTHORIZATION", "apikey jaeyul.dl:caf84bc5c54d7bd39058385fc83c0532");
+        post.addHeader("CLIENT-ID", client_id);
+        post.addHeader("AUTHORIZATION", authorization);
         JSONObject requestBody = new JSONObject();
         requestBody.put("file_name", fileName);
         requestBody.put("file_data", fileData);
