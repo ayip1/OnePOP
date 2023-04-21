@@ -3,11 +3,11 @@ package com.example.myloginapp.Data;
 import java.util.List;
 
 public class Folder {
-    private int id;
+    private int id, parentID, orgID, userID;
     private String name;
-    private int parentID;
     private List<Folder> childFolders;
     private List<Receipt> childReceipts;
+
 
     public Folder(int id, String name, int parentID) {
         this.id = id;
@@ -22,6 +22,8 @@ public class Folder {
     public int getParentID() {
         return parentID;
     }
+
+    public String getName() { return name; }
 
     public List<Folder> getChildFolders() {
         return childFolders;

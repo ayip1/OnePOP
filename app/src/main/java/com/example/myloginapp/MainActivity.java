@@ -69,16 +69,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import android.util.Base64;
-
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
-    private Session session;
+    private static final int REQUEST_CODE = 1;
+    public Session session;
+    public int userID;
+    public int currentOrgID;
+    public int rootFolderID;
+    public int parentFolderID;
+    public int currentFolderID;
     TextView navUsername,navEmail;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
     BottomNavigationView bottomNavigationView;
-    Toolbar toolbar;
+    public Toolbar toolbar;
     NavigationView navigationView;
     View headerView;
     ImageView imageFrame;
@@ -111,7 +117,12 @@ public class MainActivity extends AppCompatActivity {
         navEmail = (TextView) headerView.findViewById(R.id.nav_header_email);
 
 
-        int userID = session.getUserID();
+        userID = session.getUserID();
+        rootFolderID = DatabaseHandler.getUserRootFolder(userID);
+        currentFolderID = rootFolderID;
+        parentFolderID = -1;
+        currentOrgID = -1;
+
         String username = DatabaseHandler.getUserColumn(userID,"username");
         String email = DatabaseHandler.getUserColumn(userID,"email");
 
@@ -138,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                     navigationView.setCheckedItem(R.id.nav_myreciepts);
                     toolbar.setTitle("My Receipts");
                     bottomNavigationView.getMenu().findItem(R.id.bottom_nav_myreceipts).setChecked(true);
+                    currentFolderID = rootFolderID;
                     break;
                 case R.id.nav_mygroups:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyGroupsFragment(), "mygroups").commit();
@@ -162,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.frame_layout, new MyReceiptsFragment(), "myreceipts").commit();
                 navigationView.setCheckedItem(R.id.nav_myreciepts);
-
+                currentFolderID = rootFolderID;
                 toolbar.setTitle("My Receipts");
             } else {
                 getSupportFragmentManager().beginTransaction().
@@ -189,25 +201,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public String convertImageToBase64(Uri uri) {
-        try {
-            //ContentResolver contentResolver = getContentResolver();
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            byte[] imageBytes = new byte[inputStream.available()];
-            inputStream.read(imageBytes);
-            inputStream.close();
-            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     ExecutorService mExecutor;// = Executors.newSingleThreadExecutor();
     Handler mHandler;// = new Handler(Looper.getMainLooper());
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Refresh the activity as needed
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
+                navigationView.setCheckedItem(R.id.nav_myreciepts);
+                toolbar.setTitle(getHeader());
+            }
+        }
+
         //System.out.println("onActivityResult was hit ------------------------------------------");
         //System.out.println("this is what is in data: " + data.getExtras().get("data"));
         if (resultCode != RESULT_CANCELED) {
@@ -247,10 +256,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
     public void updateUI(String receiptData) throws JSONException {
         //convert string to json before interacting with it
         JSONObject d = new JSONObject(receiptData);
-
+        //startActivity(new Intent( this,PasswordReset.class));
         setContentView(R.layout.activity_confirm_receipt_info);
 
         EditText updateCategory = findViewById(R.id.category);
@@ -286,6 +296,29 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    } */
+
+    //Creates new ReceiptConfirmation Activity and forwards JSON data
+    public void updateUI(String receiptData) throws JSONException {
+        JSONObject receiptJSON = new JSONObject(receiptData);
+        Intent intent = new Intent(this, ReceiptConfirmation.class);
+        intent.putExtra("JSONString", receiptJSON.toString());
+        intent.putExtra("folderID", currentFolderID);
+        startActivity(intent);
+    }
+
+    public String convertImageToBase64(Uri uri) {
+        try {
+            //ContentResolver contentResolver = getContentResolver();
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            byte[] imageBytes = new byte[inputStream.available()];
+            inputStream.read(imageBytes);
+            inputStream.close();
+            return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // Create an interface to respond with the result after processing
@@ -392,9 +425,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private  void replaceFragment(Fragment fragment) {
+    public void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
@@ -434,15 +468,47 @@ public class MainActivity extends AppCompatActivity {
             folderLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dialog.dismiss();
 
+                    dialog.dismiss();
+                    // Create the AlertDialog and set its title and message
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Enter folder name");
+
+                    // Create the EditText view and add it to the AlertDialog
+                    final EditText input = new EditText(MainActivity.this);
+                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(200,  ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    builder.setView(input);
+
+                    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String folderName = input.getText().toString();
+                            int ownerID = (currentOrgID==-1) ? userID : currentOrgID;
+                            boolean isOrg = (currentOrgID==-1) ? true : false;
+                            DatabaseHandler.insertFolder(ownerID, currentFolderID, folderName, isOrg);
+                            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
+                            navigationView.setCheckedItem(R.id.nav_myreciepts);
+                            toolbar.setTitle(getHeader());
+
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    // Show the AlertDialog
+                    builder.show();
                 }
             });
 
             uploadLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
 
                     Intent intent = new Intent();
                     intent.setType("image/*");
@@ -484,6 +550,29 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        // Do Here what ever you want do on back press;
+        if (currentFolderID!=rootFolderID) {
+            currentFolderID = parentFolderID;
+            parentFolderID = DatabaseHandler.getParentFolderID(currentFolderID);
+            replaceFragment(new MyReceiptsFragment());
+
+        }
+
+    }
+
+    public String getHeader() {
+        String header = "";
+        if (currentFolderID==rootFolderID) {
+            header = "My Receipts";
+        }
+        else if (currentFolderID!=-1) {
+            header =  DatabaseHandler.getFolderName(currentFolderID);
+        }
+        //else org
+        return header;
+    }
 
 
 }

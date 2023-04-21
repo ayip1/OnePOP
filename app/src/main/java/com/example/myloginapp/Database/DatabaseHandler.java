@@ -1,5 +1,9 @@
 package com.example.myloginapp.Database;
 
+import android.database.Cursor;
+
+import com.example.myloginapp.Data.Address;
+import com.example.myloginapp.Data.Receipt;
 import com.example.myloginapp.Data.Session;
 
 import java.sql.*;
@@ -253,6 +257,217 @@ public class DatabaseHandler {
         return userID;
     }
 
+    /**
+     * Returns the rootFolderID of the user with the identifier
+     * @param userID the identifier of the user
+     * @return int of rootFolderID belonging to the identifier
+     */
+    public static int getUserRootFolder(int userID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        CallableStatement cs;
+        ResultSet rs;
+        int rootFolderID = -1;
+
+        try {
+            cs = con.prepareCall("{call get_user_root_folder(?) }");
+            cs.setInt(1, userID);
+            rs = cs.executeQuery();
+
+            if (rs.next()) rootFolderID = rs.getInt(1);
+
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rootFolderID;
+    }
+
+    public static void insertReceipt(int folderID, Receipt receipt) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+
+        int userId = receipt.getUserID();
+        String uploadDate = receipt.getUploadDate();
+
+        double total = receipt.getTotal();
+        String purchaseDate = receipt.getPurchaseDate();
+        String barcode = receipt.getBarcode();
+        String payment = receipt.getPayment();
+        String category = receipt.getCategory();
+
+        String store = receipt.getStore();
+        String address = (receipt.getAddress()==null) ? "" : receipt.getAddress().toString();
+        String phone = receipt.getPhone();
+
+        byte[] imageData = receipt.getImageData();
+        byte[] thumbnailData = receipt.getThumbnailData();
+
+        try {
+            String statement = "INSERT INTO receipt (user_id, folder_id, upload_date, total, purchase_date, barcode, phone, store, address, payment, category, img, thumbnail)"
+                    + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            //String statement = "INSERT INTO receipt (user_id, folder_id, upload_date, total, purchase_date, barcode, phone, store, address, payment, category)"
+            //        + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            ps = con.prepareStatement(statement);
+            ps.setInt(1, userId);
+            ps.setInt(2, folderID);
+            ps.setString(3, uploadDate);
+            ps.setDouble(4, total);
+            ps.setString(5, purchaseDate);
+            ps.setString(6, barcode);
+            ps.setString(7, phone);
+            ps.setString(8, store);
+            ps.setString(9, address);
+            ps.setString(10, payment);
+            ps.setString(11, category);
+            ps.setBytes(12, imageData);
+            ps.setBytes(13, thumbnailData);
+
+            ps.execute();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static ResultSet getAllReceipts(int userID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+
+        try {
+            String statement = "SELECT * FROM receipt WHERE user_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, userID);
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+
+    }
+
+    public static ResultSet getReceipts(int userID, int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+
+        try {
+            String statement = "SELECT * FROM receipt WHERE user_id=? AND folder_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, userID);
+            ps.setInt(2, folderID);
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+    public static ResultSet getChildFolders(int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        CallableStatement cs;
+        ResultSet rs = null;
+
+        try {
+            cs = con.prepareCall("{call get_child_folders(?)}");
+            cs.setInt(1, folderID);
+            rs = cs.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+    public static void insertFolder(int ownerID, int parentFolderID, String folderName, boolean isOrganization) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+
+        try {
+            String statement = "INSERT INTO folder (folder_name, creator_id, org_id, parent_folder_id)"
+                                + "VALUES (?, ?, ?, ?)";
+            ps = con.prepareCall(statement);
+            ps.setString(1, folderName);
+            ps.setInt(4, parentFolderID);
+
+            if (isOrganization) {
+                ps.setInt(3, ownerID);
+                ps.setNull(2, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(2, ownerID);
+                ps.setNull(3, java.sql.Types.INTEGER);
+            }
+
+            ps.execute();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static int getParentFolderID(int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+        int parentFolderID = -1;
+
+        try {
+            String statement = "SELECT parent_folder_id FROM folder WHERE folder_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, folderID);
+            rs = ps.executeQuery();
+
+            if (rs.next()) parentFolderID = rs.getInt(1);
+
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return parentFolderID;
+    }
+
+    public static String getFolderName(int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+        String name = "";
+
+        try {
+            String statement = "SELECT folder_name FROM folder WHERE folder_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, folderID);
+            rs = ps.executeQuery();
+
+            if (rs.next()) name = rs.getString(1);
+
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return name;
+    }
 
 
 }
