@@ -334,7 +334,7 @@ public class DatabaseHandler {
 
     }
 
-    public static ResultSet getReceipts(int userID) {
+    public static ResultSet getAllReceipts(int userID) {
         ApplicationDB db = new ApplicationDB();
         Connection con = db.getConnection();
         PreparedStatement ps;
@@ -354,7 +354,72 @@ public class DatabaseHandler {
 
     }
 
+    public static ResultSet getReceipts(int userID, int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
 
+        try {
+            String statement = "SELECT * FROM receipt WHERE user_id=? AND folder_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, userID);
+            ps.setInt(2, folderID);
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+    public static ResultSet getChildFolders(int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        CallableStatement cs;
+        ResultSet rs = null;
+
+        try {
+            cs = con.prepareCall("{call get_child_folders(?)}");
+            cs.setInt(1, folderID);
+            rs = cs.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+    public static void insertFolder(int ownerID, int parentFolderID, String folderName, boolean isOrganization) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+
+        try {
+            String statement = "INSERT INTO folder (folder_name, creator_id, org_id, parent_folder_id)"
+                                + "VALUES (?, ?, ?, ?)";
+            ps = con.prepareCall(statement);
+            ps.setString(1, folderName);
+            ps.setInt(4, parentFolderID);
+
+            if (isOrganization) {
+                ps.setInt(3, ownerID);
+                ps.setNull(2, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(2, ownerID);
+                ps.setNull(3, java.sql.Types.INTEGER);
+            }
+
+            ps.execute();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 

@@ -73,10 +73,11 @@ import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
-    private Session session;
-    int userID;
-    int rootFolderID;
-    int currentFolderID;
+    public Session session;
+    public int userID;
+    public int currentOrgID;
+    public int rootFolderID;
+    public int currentFolderID;
     TextView navUsername,navEmail;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         userID = session.getUserID();
         rootFolderID = DatabaseHandler.getUserRootFolder(userID);
         currentFolderID = rootFolderID;
+        currentOrgID = -1;
 
         String username = DatabaseHandler.getUserColumn(userID,"username");
         String email = DatabaseHandler.getUserColumn(userID,"email");
@@ -141,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     navigationView.setCheckedItem(R.id.nav_myreciepts);
                     toolbar.setTitle("My Receipts");
                     bottomNavigationView.getMenu().findItem(R.id.bottom_nav_myreceipts).setChecked(true);
+                    currentFolderID = rootFolderID;
                     break;
                 case R.id.nav_mygroups:
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyGroupsFragment(), "mygroups").commit();
@@ -165,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.frame_layout, new MyReceiptsFragment(), "myreceipts").commit();
                 navigationView.setCheckedItem(R.id.nav_myreciepts);
-
+                currentFolderID = rootFolderID;
                 toolbar.setTitle("My Receipts");
             } else {
                 getSupportFragmentManager().beginTransaction().
@@ -439,15 +442,44 @@ public class MainActivity extends AppCompatActivity {
             folderLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dialog.dismiss();
 
+                    dialog.dismiss();
+                    // Create the AlertDialog and set its title and message
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Enter folder name");
+
+                    // Create the EditText view and add it to the AlertDialog
+                    final EditText input = new EditText(MainActivity.this);
+                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(200,  ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    builder.setView(input);
+
+                    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String folderName = input.getText().toString();
+                            int ownerID = (currentOrgID==-1) ? userID : currentOrgID;
+                            boolean isOrg = (currentOrgID==-1) ? true : false;
+                            DatabaseHandler.insertFolder(ownerID, currentFolderID, folderName, isOrg);
+
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    // Show the AlertDialog
+                    builder.show();
                 }
             });
 
             uploadLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
 
                     Intent intent = new Intent();
                     intent.setType("image/*");

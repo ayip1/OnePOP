@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="130dp"
-    android:layout_height="130dp"
+    android:layout_height="135dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:maxHeight="160dp"
     android:layout_margin="5dp"
-    android:backgroundTint="@color/light_gray"
+    app:cardBackgroundColor="@android:color/transparent"
+    app:cardElevation="0dp"
     >
     
     <LinearLayout
@@ -14,16 +16,19 @@
         android:orientation="vertical">
 
         <ImageView
+            android:id="@+id/file_img"
             android:layout_width="match_parent"
             android:scaleType="centerCrop"
             android:layout_height="100dp"
             android:src="@drawable/baseline_folder_24" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/file_name"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Folder 3"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:gravity="center_horizontal"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
