@@ -41,7 +41,7 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link MyReceiptsFragment#newInstance} factory method to
+ * Use the {@link MyReceiptsFragment} factory method to
  * create an instance of this fragment.
  */
 public class MyReceiptsFragment extends Fragment {
@@ -52,8 +52,7 @@ public class MyReceiptsFragment extends Fragment {
     private List<CardView> cardArr = new ArrayList<>();
     private int userID, folderID;
     private ResultSet foldersRs, receiptsRs;
-
-
+    View rootView;
     public MyReceiptsFragment() {
         // Required empty public constructor
     }
@@ -78,9 +77,9 @@ public class MyReceiptsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_my_receipts, container, false);
+        rootView = inflater.inflate(R.layout.fragment_my_receipts, container, false);
+        rootView.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         grid = rootView.findViewById(R.id.my_receipts_grid);
-
         populateFragment();
 
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -135,13 +134,12 @@ public class MyReceiptsFragment extends Fragment {
 
                     dialog.show();
                 } else {
+                    rootView.findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                     Folder folder = (Folder) tag;
                     mainActivity.currentFolderID =folder.getID();
                     mainActivity.parentFolderID = folder.getParentID();
                     mainActivity.replaceFragment(new MyReceiptsFragment());
                 }
-
-
 
 
             }
@@ -151,6 +149,7 @@ public class MyReceiptsFragment extends Fragment {
     }
 
     private void populateFragment() {
+
         mainActivity.toolbar.setTitle(mainActivity.getHeader());
 
         try {
@@ -197,6 +196,7 @@ public class MyReceiptsFragment extends Fragment {
 
         FileAdapter adapter = new FileAdapter(getContext(), cardArr);
         grid.setAdapter(adapter);
+
 
     }
 

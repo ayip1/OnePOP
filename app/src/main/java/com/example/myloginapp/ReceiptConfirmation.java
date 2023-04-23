@@ -41,6 +41,7 @@ public class ReceiptConfirmation extends AppCompatActivity {
         session = new Session(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_receipt_info);
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
 
         updateCategory = findViewById(R.id.category);
         updateDescription = findViewById(R.id.description);
@@ -70,6 +71,8 @@ public class ReceiptConfirmation extends AppCompatActivity {
         confirmReceipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
                 if (!DatabaseHandler.isValidSession(session)) //Invalid Session, return to login
                     startActivity(new Intent(getApplicationContext(), Login.class));
 
@@ -97,8 +100,9 @@ public class ReceiptConfirmation extends AppCompatActivity {
                 int folderID = getIntent().getIntExtra("folderID", -1);
                 DatabaseHandler.insertReceipt(folderID, receipt);
 
-                setResult(RESULT_OK);
+                setResult(123);
                 finish();
+
             }
         });
     }

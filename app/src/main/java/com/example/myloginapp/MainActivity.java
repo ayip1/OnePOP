@@ -73,6 +73,7 @@ import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
+
     private static final int REQUEST_CODE = 1;
     public Session session;
     public int userID;
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_myreciepts:
+                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment(), "myreceipts").commit();
                     navigationView.setCheckedItem(R.id.nav_myreciepts);
                     toolbar.setTitle("My Receipts");
@@ -149,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     currentFolderID = rootFolderID;
                     break;
                 case R.id.nav_mygroups:
+                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyGroupsFragment(), "mygroups").commit();
                     navigationView.setCheckedItem(R.id.nav_mygroups);
                     toolbar.setTitle("My Groups");
@@ -160,19 +163,21 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(getApplicationContext(), Login.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                     break;
             }
-
             drawerLayout.closeDrawer(GravityCompat.START);
+
             return true;
         });
 
         //Bottom Navigation Listener
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.bottom_nav_myreceipts) {
+                findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.frame_layout, new MyReceiptsFragment(), "myreceipts").commit();
                 navigationView.setCheckedItem(R.id.nav_myreciepts);
                 currentFolderID = rootFolderID;
                 toolbar.setTitle("My Receipts");
+
             } else {
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.frame_layout, new MyGroupsFragment(), "mygroups").commit();
@@ -205,18 +210,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                // Refresh the activity as needed
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
-                navigationView.setCheckedItem(R.id.nav_myreciepts);
-                toolbar.setTitle(getHeader());
-            }
-        }
+        /*
+        if (resultCode == RESULT_OK) {
+            // Refresh the activity as needed
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_myreciepts);
+            toolbar.setTitle(getHeader());
+            Context context = getApplicationContext();
+            String text = "worked";
+            int duration = Toast.LENGTH_SHORT;
 
-        //System.out.println("onActivityResult was hit ------------------------------------------");
-        //System.out.println("this is what is in data: " + data.getExtras().get("data"));
-        if (resultCode != RESULT_CANCELED) {
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        } */
+
+        if (resultCode == 123) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_myreciepts);
+            toolbar.setTitle(getHeader());
+        }
+        else if (resultCode != RESULT_CANCELED ) {
             if (requestCode == pic_id) {
                 if (data != null) {
 
@@ -253,39 +266,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*
-    public void updateUI(String receiptData) throws JSONException {
-        //convert string to json before interacting with it
-        JSONObject d = new JSONObject(receiptData);
-        //startActivity(new Intent( this,PasswordReset.class));
-        setContentView(R.layout.activity_confirm_receipt_info);
-
-        EditText updateCategory = findViewById(R.id.category);
-        EditText updateDescription = findViewById(R.id.description);
-        EditText updateDate = findViewById(R.id.date);
-        EditText updateTotalPrice = findViewById(R.id.total_price);
-        EditText updatePayment = findViewById(R.id.payment_type);
-
-        if(d.has("category")) updateCategory.setText(d.getString("category"));
-        if(d.has("date")) updateDate.setText(d.getString("date"));
-        if(d.has("payment")) updatePayment.setText(d.getJSONObject("payment").getString("display_name"));
-        if(d.has("subtotal") && d.has("tax")) {
-            double totalPrice;
-            if(!d.isNull("subtotal") && !d.isNull("tax")) {
-                totalPrice = d.getDouble("subtotal") + d.getDouble("tax");
-                updateTotalPrice.setText(Double.toString(totalPrice));
-            }
-            else if (!d.isNull("subtotal") && d.isNull("tax")) {
-                totalPrice = d.getDouble("subtotal");
-                updateTotalPrice.setText(Double.toString(totalPrice));
-            }
-
-        } else if (d.has("subtotal") && !d.has("tax")) {
-            if(!d.isNull("subtotal")) updateTotalPrice.setText(Double.toString(d.getDouble("subtotal")));
-        }
-        if(d.has("vendor")) updateDescription.setText(d.getJSONObject("vendor").getString("name"));
-
-    } */
 
     //Creates new ReceiptConfirmation Activity and forwards JSON data
     public void updateUI(String receiptData) throws JSONException {
@@ -293,8 +273,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ReceiptConfirmation.class);
         intent.putExtra("JSONString", receiptJSON.toString());
         intent.putExtra("folderID", currentFolderID);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE);
+
     }
+
 
     public String convertImageToBase64(Uri uri) {
         try {
@@ -327,30 +309,13 @@ public class MainActivity extends AppCompatActivity {
                         //updateUi(result);
 
                         loadingScreen.dismiss();
-
+                        mExecutor.shutdown();
                         System.out.println(result);
                         try {
                             updateUI(result);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
-
-                        //   category, store name, total, barcode number, date, payment method
-                        //  .category
-                        //  .date
-                        //  .payment.card_number (card number if there is one)
-                        //  .payment.display_name (type of pmt)
-                        //  .subtotal (total w/o tax)
-                        //  .tax (tax, add to subtotal to get total)
-                        //
-
-
-                        // If we're done with the ExecutorService, shut it down.
-                        // (If you want to re-use the ExecutorService,
-                        // make sure to shut it down whenever everything's completed
-                        // and you don't need it any more.)
-
-                            mExecutor.shutdown();
 
                     }
                 });
@@ -542,10 +507,10 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         // Do Here what ever you want do on back press;
         if (currentFolderID!=rootFolderID) {
+            findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
             currentFolderID = parentFolderID;
             parentFolderID = DatabaseHandler.getParentFolderID(currentFolderID);
             replaceFragment(new MyReceiptsFragment());
-
         }
 
     }
