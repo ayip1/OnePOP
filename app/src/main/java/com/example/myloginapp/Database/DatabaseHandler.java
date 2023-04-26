@@ -489,5 +489,25 @@ public class DatabaseHandler {
         return name;
     }
 
+    //Rahuls changes start
+    public static ResultSet getUserOrgs(int userID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        CallableStatement cs;
+        ResultSet rs = null;
+
+        try {
+            cs = con.prepareCall("{call get_user_orgs(?) }");
+            cs.setInt(1, userID);
+            rs = cs.executeQuery();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
 
 }
