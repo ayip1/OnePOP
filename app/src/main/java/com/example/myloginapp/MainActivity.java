@@ -4,6 +4,7 @@ package com.example.myloginapp;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -15,11 +16,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.metrics.Event;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -63,6 +66,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.HttpURLConnection;
+import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.io.ByteArrayOutputStream;
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     public int rootFolderID;
     public int parentFolderID;
     public int currentFolderID;
+    private File cameraOutput;
     TextView navUsername,navEmail;
     FloatingActionButton fab;
     DrawerLayout drawerLayout;
@@ -236,32 +241,26 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         } */
 
-        if (resultCode == 123) {
+        if (resultCode == 555) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_myreciepts);
             toolbar.setTitle(getHeader());
         }
         else if (resultCode != RESULT_CANCELED ) {
             if (requestCode == pic_id) {
-                if (data != null) {
 
-                    mExecutor = Executors.newSingleThreadExecutor();
-                    mHandler = new Handler(Looper.getMainLooper());
 
-                    Bitmap photo = (Bitmap) data.getExtras().get("data");
+                mExecutor = Executors.newSingleThreadExecutor();
+                mHandler = new Handler(Looper.getMainLooper());
+                Uri fileURI = Uri.fromFile(cameraOutput);
+                String base64Image = convertImageToBase64(fileURI);
 
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] b = baos.toByteArray();
-                    String base64Image = Base64.encodeToString(b, Base64.DEFAULT);
 
-                    processInBg(base64Image);
-                    loadingScreen.show();
 
-                } else {
-                    System.out.println("Pressed back");
-                    return;
-                }
+                processInBg(base64Image);
+                loadingScreen.show();
+
+
             }
             if (requestCode == PICK_IMAGE) {
                 Uri fileURI = data.getData();
@@ -491,14 +490,19 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
 
 
-
                     openCamera = findViewById(R.id.cameraButton);
 
+                    File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                    cameraOutput = new File(dir, "CameraContentDemo.jpeg");
+
+                    Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".provider", cameraOutput);
+
                     Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
                     startActivityForResult(camera_intent, pic_id);
 
                     dialog.dismiss();
-
 
 
                 }

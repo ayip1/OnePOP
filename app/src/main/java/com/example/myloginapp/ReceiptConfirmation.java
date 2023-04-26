@@ -100,7 +100,7 @@ public class ReceiptConfirmation extends AppCompatActivity {
                 int folderID = getIntent().getIntExtra("folderID", -1);
                 DatabaseHandler.insertReceipt(folderID, receipt);
 
-                setResult(123);
+                setResult(555);
                 finish();
 
             }
