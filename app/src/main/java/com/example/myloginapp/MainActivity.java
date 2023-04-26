@@ -247,32 +247,17 @@ public class MainActivity extends AppCompatActivity {
             toolbar.setTitle(getHeader());
         }
         else if (resultCode != RESULT_CANCELED ) {
-            if (requestCode == pic_id) {
+            Uri fileURI = (requestCode==pic_id) ? Uri.fromFile(cameraOutput) : (requestCode==PICK_IMAGE) ? data.getData() : null;
+            mExecutor = Executors.newSingleThreadExecutor();
+            mHandler = new Handler(Looper.getMainLooper());
 
-
-                mExecutor = Executors.newSingleThreadExecutor();
-                mHandler = new Handler(Looper.getMainLooper());
-                Uri fileURI = Uri.fromFile(cameraOutput);
+            if (fileURI != null) {
                 String base64Image = convertImageToBase64(fileURI);
-
-
-
-                processInBg(base64Image);
-                loadingScreen.show();
-
-
-            }
-            if (requestCode == PICK_IMAGE) {
-                Uri fileURI = data.getData();
-                String base64Image = convertImageToBase64(fileURI);
-
-                mExecutor = Executors.newSingleThreadExecutor();
-                mHandler = new Handler(Looper.getMainLooper());
-
                 processInBg(base64Image);
                 loadingScreen.show();
 
             }
+
         }
 
     }
