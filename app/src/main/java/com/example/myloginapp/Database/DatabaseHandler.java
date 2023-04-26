@@ -392,6 +392,26 @@ public class DatabaseHandler {
         return rs;
     }
 
+    public static ResultSet getSummary(int userID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+        //SELECT count(*), sum(total) FROM receipt WHERE user_id = ?
+
+        try {
+            String statement = "SELECT count(*), sum(total) FROM receipt WHERE user_id = ?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, userID);
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
     public static void insertFolder(int ownerID, int parentFolderID, String folderName, boolean isOrganization) {
         ApplicationDB db = new ApplicationDB();
         Connection con = db.getConnection();

@@ -157,6 +157,12 @@ public class MainActivity extends AppCompatActivity {
                     toolbar.setTitle("My Groups");
                     bottomNavigationView.getMenu().findItem(R.id.bottom_nav_mygroups).setChecked(true);
                     break;
+                case R.id.nav_summary:
+                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MySummaryFragment(), "mysummary").commit();
+                    toolbar.setTitle("My Summary");
+                    bottomNavigationView.getMenu().findItem(R.id.bottom_nav_mygroups).setChecked(true);
+                    break;
                 case R.id.nav_logout:
                     navigationView.setCheckedItem(R.id.nav_logout);
                     session.clear();
