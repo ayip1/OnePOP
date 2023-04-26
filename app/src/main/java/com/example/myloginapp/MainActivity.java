@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Navigation Drawer Listener
         navigationView.setNavigationItemSelectedListener(item -> {
+            findViewById(R.id.bottom_coordinator).setVisibility(View.VISIBLE);
             switch (item.getItemId()) {
                 case R.id.nav_myreciepts:
                     findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
@@ -158,10 +159,9 @@ public class MainActivity extends AppCompatActivity {
                     bottomNavigationView.getMenu().findItem(R.id.bottom_nav_mygroups).setChecked(true);
                     break;
                 case R.id.nav_summary:
-                    findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MySummaryFragment(), "mysummary").commit();
                     toolbar.setTitle("My Summary");
-                    bottomNavigationView.getMenu().findItem(R.id.bottom_nav_mygroups).setChecked(true);
+                    findViewById(R.id.bottom_coordinator).setVisibility(View.GONE);
                     break;
                 case R.id.nav_logout:
                     navigationView.setCheckedItem(R.id.nav_logout);
@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(getApplicationContext(), Login.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                     break;
             }
+
             drawerLayout.closeDrawer(GravityCompat.START);
 
             return true;

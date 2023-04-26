@@ -76,6 +76,7 @@ public class MySummaryFragment extends Fragment {
         TextView totalspending = rootView.findViewById(R.id.totalspending);
         TextView totalreceipts = rootView.findViewById(R.id.totalreceipts);
         ResultSet summary = DatabaseHandler.getSummary(userID);
+        rootView.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         try {
             if(summary.next()){
                 totalspending.setText(totalspending.getText().toString() + " $" + summary.getInt(2));

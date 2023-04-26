@@ -66,8 +66,8 @@ public class MyReceiptsFragment extends Fragment {
         receiptsRs = DatabaseHandler.getReceipts(userID, folderID);
         foldersRs = DatabaseHandler.getChildFolders(folderID);
 
-        if (!DatabaseHandler.isValidSession(mainActivity.session)) //Invalid Session, return to login
-            startActivity(new Intent(getContext(), Login.class));
+            if (!DatabaseHandler.isValidSession(mainActivity.session)) //Invalid Session, return to login
+                startActivity(new Intent(getContext(), Login.class));
 
         super.onCreate(savedInstanceState);
     }
