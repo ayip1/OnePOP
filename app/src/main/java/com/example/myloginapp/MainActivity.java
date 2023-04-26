@@ -450,11 +450,17 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             String folderName = input.getText().toString();
                             int ownerID = (currentOrgID==-1) ? userID : currentOrgID;
-                            boolean isOrg = (currentOrgID==-1) ? true : false;
+                            boolean isOrg = (currentOrgID==-1) ? false : true;
                             DatabaseHandler.insertFolder(ownerID, currentFolderID, folderName, isOrg);
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
                             navigationView.setCheckedItem(R.id.nav_myreciepts);
                             toolbar.setTitle(getHeader());
+                            Context context = getApplicationContext();
+                            String text = ownerID + " " + currentOrgID + " " + rootFolderID + " " + isOrg;
+                            int duration = Toast.LENGTH_SHORT;
+
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
 
                         }
                     });
