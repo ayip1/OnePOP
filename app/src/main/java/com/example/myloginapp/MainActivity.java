@@ -163,6 +163,11 @@ public class MainActivity extends AppCompatActivity {
                     toolbar.setTitle("My Summary");
                     findViewById(R.id.bottom_coordinator).setVisibility(View.GONE);
                     break;
+                case R.id.nav_about:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new AboutUsFragment(), "aboutus").commit();
+                    toolbar.setTitle("OnePOP");
+                    findViewById(R.id.bottom_coordinator).setVisibility(View.GONE);
+                    break;
                 case R.id.nav_logout:
                     navigationView.setCheckedItem(R.id.nav_logout);
                     session.clear();

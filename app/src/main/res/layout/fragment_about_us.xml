@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AboutUsFragment"
+    android:background="@color/purple_secondary">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="About OnePOP"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="OnePOP is a program designed to give users more financial freedom and the ability to easily view their spendings every month while eliminating the need for a physical receipt and making it easy to find in the future. You'll be able to take photos of your receipts directly through the app as well as uploading from photos or from system files. Our program scans receipts and parses specific data relevant to the user using an OCR. Specifically, our program parses the receipts for the purchase total, the store name, the date of purchase, and the form of payment. In addition, it saves a picture of the receipt itself in case of any additional information you would like to reference to in the future. Since all of our data is stored on the cloud, you can access your receipts anywhere on any android device.
+"           android:textColor="@color/white"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Developers"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:textColor="@color/white"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="Dustin Lee\nAndrew Yip\nRahul Umrani\nEthan Nguyen"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
+
+
+</FrameLayout>

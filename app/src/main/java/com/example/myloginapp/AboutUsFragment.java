@@ -1,6 +1,5 @@
 package com.example.myloginapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,19 +7,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.example.myloginapp.Database.DatabaseHandler;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link MyAccountFragment#newInstance} factory method to
+ * Use the {@link AboutUsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MySummaryFragment extends Fragment {
+public class AboutUsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -31,11 +24,7 @@ public class MySummaryFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private int userID;
-
-    MainActivity mainAct;
-
-    public MySummaryFragment() {
+    public AboutUsFragment() {
         // Required empty public constructor
     }
 
@@ -45,11 +34,11 @@ public class MySummaryFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MyAccountFragment.
+     * @return A new instance of fragment AboutUsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MySummaryFragment newInstance(String param1, String param2) {
-        MySummaryFragment fragment = new MySummaryFragment();
+    public static AboutUsFragment newInstance(String param1, String param2) {
+        AboutUsFragment fragment = new AboutUsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,32 +48,21 @@ public class MySummaryFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mainAct = (MainActivity) getActivity();
-        userID = mainAct.userID;
-        if (!DatabaseHandler.isValidSession(mainAct.session)) //Invalid Session, return to login
-            startActivity(new Intent(getContext(), Login.class));
         super.onCreate(savedInstanceState);
-
-
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_my_summary, container, false);
-        TextView totalspending = rootView.findViewById(R.id.totalspending);
-        TextView totalreceipts = rootView.findViewById(R.id.totalreceipts);
-        ResultSet summary = DatabaseHandler.getSummary(userID);
+
+        View rootView = (View) inflater.inflate(R.layout.fragment_about_us, container, false);
         rootView.findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-        try {
-            if(summary.next()){
-                totalspending.setText(totalspending.getText().toString() + " $" + summary.getDouble(2));
-                totalreceipts.setText(totalreceipts.getText().toString() + summary.getInt(1));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
         return rootView;
     }
 }
