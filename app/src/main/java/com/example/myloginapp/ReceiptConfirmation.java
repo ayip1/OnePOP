@@ -154,7 +154,13 @@ public class ReceiptConfirmation extends AppCompatActivity {
 
         Bitmap bitmap = BitmapFactory.decodeStream(input);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        int quality = 100;
+        do {
+            baos.reset();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+            quality -= 5;
+        } while (baos.size() > 200000 && quality > 0); // reduce quality until file size is less than 1MB
+
         byte[] imageData = baos.toByteArray();
 
         return imageData;
