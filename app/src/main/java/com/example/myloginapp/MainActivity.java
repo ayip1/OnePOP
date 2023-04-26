@@ -455,13 +455,6 @@ public class MainActivity extends AppCompatActivity {
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
                             navigationView.setCheckedItem(R.id.nav_myreciepts);
                             toolbar.setTitle(getHeader());
-                            Context context = getApplicationContext();
-                            String text = ownerID + " " + currentOrgID + " " + rootFolderID + " " + isOrg;
-                            int duration = Toast.LENGTH_SHORT;
-
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-
                         }
                     });
 
