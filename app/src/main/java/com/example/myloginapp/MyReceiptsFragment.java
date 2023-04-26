@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -100,6 +101,8 @@ public class MyReceiptsFragment extends Fragment {
                     TextView total = dialog.findViewById(R.id.total);
                     TextView payment = dialog.findViewById(R.id.payment_type);
                     TextView purchaseDate = dialog.findViewById(R.id.purchase_date);
+                    TextView phone = dialog.findViewById(R.id.phone_number);
+                    TextView barcode = dialog.findViewById(R.id.barcode);
                     Button btnFull = dialog.findViewById(R.id.btn_full);
                     Button btnClose = dialog.findViewById(R.id.btn_close);
 
@@ -129,7 +132,17 @@ public class MyReceiptsFragment extends Fragment {
 
                             i.putExtra("imageData", thumbnailData);
 
-                            startActivity(i);
+                            try {
+                                startActivity(i);
+                            } catch (RuntimeException e) {
+                                if (e.getMessage().contains("FAILED BINDER TRANSACTION")) {
+                                    // handle the binder transaction error here
+                                    Log.e("onClick", "FAILED BINDER TRANSACTION", e);
+                                } else {
+                                    // handle other runtime exceptions here
+                                    Log.e("onClick", "Error", e);
+                                }
+                            }
                         }
                     });
 

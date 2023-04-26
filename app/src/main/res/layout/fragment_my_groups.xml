@@ -7,12 +7,16 @@
     android:background="@color/purple_secondary">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <GridView
+        android:id="@+id/my_groups_grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="My Groups"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textColor="@color/white"/>
+        android:columnWidth="100dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:paddingBottom="100dp"
+        android:clipToPadding="false"
+        android:paddingTop="10dp"/>
 
 </FrameLayout>

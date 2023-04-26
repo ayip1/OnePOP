@@ -63,6 +63,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.HttpURLConnection;
+import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.io.ByteArrayOutputStream;
@@ -94,12 +95,24 @@ public class MainActivity extends AppCompatActivity {
     private static final int pic_id = 123;
     public static final int PICK_IMAGE = 1;
 
-    String client_id = "vrfvlujbskjd9dsDpZLWJznmRIaLZ5yKwXNL1HB";
-    String authorization = "apikey veryfi21:f7403c7c99c862d549191dae1b76e4cc";
+    static {
+        System.setProperty("android.max_aspect", "5");
+    }
+
+    String client_id = "vrfftFP8UHypTwNVZHjndib10tvOvyCD6EO6gai";
+    //vrfvlujbskjd9dsDpZLWJznmRIaLZ5yKwXNL1HB
+    String authorization = "apikey abdul394949:b25a29b41dd2a37857539014e2374730";
+    //apikey veryfi21:f7403c7c99c862d549191dae1b76e4cc
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
+
+
+
         session = new Session(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -226,12 +239,14 @@ public class MainActivity extends AppCompatActivity {
                     mExecutor = Executors.newSingleThreadExecutor();
                     mHandler = new Handler(Looper.getMainLooper());
 
+
                     Bitmap photo = (Bitmap) data.getExtras().get("data");
 
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    photo.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    photo.compress(Bitmap.CompressFormat.PNG, 100, baos);
                     byte[] b = baos.toByteArray();
                     String base64Image = Base64.encodeToString(b, Base64.DEFAULT);
+
 
                     processInBg(base64Image);
                     loadingScreen.show();
@@ -447,6 +462,43 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     dialog.dismiss();
+                    /*
+                    // Create the AlertDialog and set its title and message
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Enter folder name");
+
+                    // Create the EditText view and add it to the AlertDialog
+                    final EditText input = new EditText(MainActivity.this);
+                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(200,  ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    builder.setView(input);
+                    System.out.println("open group folder creation prompt");
+                    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String folderName = input.getText().toString();
+                            int ownerID = (currentOrgID==-1) ? userID : currentOrgID;
+                            boolean isOrg = (currentOrgID==-1) ? true : false;
+                            System.out.println("OWNER ID group CREATION: "+ ownerID);
+                            System.out.println("userID group CREATION: "+ userID);
+                            System.out.println("IS ORG group CREATION: "+ isOrg);
+                            DatabaseHandler.insertFolder(ownerID, currentFolderID, folderName, isOrg);
+                            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyGroupsFragment()).commit();
+                            navigationView.setCheckedItem(R.id.nav_mygroups);
+                            toolbar.setTitle("My Groups");
+
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    builder.show();
+                    */
 
                 }
             });
@@ -479,13 +531,15 @@ public class MainActivity extends AppCompatActivity {
                     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(200,  ViewGroup.LayoutParams.WRAP_CONTENT);
 
                     builder.setView(input);
-
+                    System.out.println("open receipt folder creation prompt");
                     builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String folderName = input.getText().toString();
                             int ownerID = (currentOrgID==-1) ? userID : currentOrgID;
                             boolean isOrg = (currentOrgID==-1) ? true : false;
+                            System.out.println("OWNER ID RECEIPT FOLDER CREATION: "+ ownerID);
+                            System.out.println("IS ORG RECEIPT FOLDER CREATION: "+ isOrg);
                             DatabaseHandler.insertFolder(ownerID, currentFolderID, folderName, isOrg);
                             getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new MyReceiptsFragment()).commit();
                             navigationView.setCheckedItem(R.id.nav_myreciepts);
@@ -570,7 +624,9 @@ public class MainActivity extends AppCompatActivity {
         else if (currentFolderID!=-1) {
             header =  DatabaseHandler.getFolderName(currentFolderID);
         }
-        //else org
+        else {
+            header = "My Groups";
+        }
         return header;
     }
 

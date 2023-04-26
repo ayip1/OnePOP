@@ -34,7 +34,11 @@ public class ReceiptConfirmation extends AppCompatActivity {
     EditText updateDate;
     EditText updateTotalPrice;
     EditText updatePayment;
+    //EditText updateAddress;
+    EditText updatePhoneNumber;
+    EditText updateBarcode;
     Button confirmReceipt;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,9 @@ public class ReceiptConfirmation extends AppCompatActivity {
         updateTotalPrice = findViewById(R.id.total_price);
         updatePayment = findViewById(R.id.payment_type);
         confirmReceipt = findViewById(R.id.save_receipt_details);
+        updateBarcode = findViewById(R.id.barcode);
+        //updateAddress = findViewById(R.id.address);
+        updatePhoneNumber = findViewById(R.id.phone_number);
 
         //byte[] imageData = getIntent().getByteArrayExtra("imageData");
         byte[] imageData = null;
@@ -86,11 +93,14 @@ public class ReceiptConfirmation extends AppCompatActivity {
                 String purchaseDate = updateDate.getText().toString();
                 double total = Double.parseDouble(updateTotalPrice.getText().toString());
                 String payMethod = updatePayment.getText().toString();
+                String barcode = updateBarcode.getText().toString();
+                //String address = updateAddress.getText().toString();
+                String phone = updatePhoneNumber.getText().toString();
 
                 Receipt receipt = new Receipt.Builder()
                         .setMetaData(userID, currentDate)
-                        .setReceiptData(total, purchaseDate, null, payMethod, category)
-                        .setStoreData(store, null, null)
+                        .setReceiptData(total, purchaseDate, barcode, payMethod, category)
+                        .setStoreData(store, null, phone)
                         .setImageData(finalImageData, finalThumbnailData)
                         .build();
 
@@ -122,6 +132,9 @@ public class ReceiptConfirmation extends AppCompatActivity {
             if(!j.isNull("subtotal")) updateTotalPrice.setText(Double.toString(j.getDouble("subtotal")));
         }
         if(j.has("vendor")) updateDescription.setText(j.getJSONObject("vendor").getString("name"));
+        //if(j.has("vendor")) updateAddress.setText(j.getJSONObject("vendor").getString("address"));
+        if(j.has("vendor")) updatePhoneNumber.setText(j.getJSONObject("vendor").getString("phone_number"));
+        if(j.has("document_reference_number")) updateBarcode.setText(j.getString("document_reference_number"));
     }
 
     private byte[] grabThumbnail(JSONObject j) throws JSONException, IOException {

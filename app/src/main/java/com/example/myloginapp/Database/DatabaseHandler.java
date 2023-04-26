@@ -373,6 +373,50 @@ public class DatabaseHandler {
 
         return rs;
     }
+    //Rahuls changes start
+    public static ResultSet getUserOrgs(int userID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        CallableStatement cs;
+        ResultSet rs = null;
+
+        try {
+            cs = con.prepareCall("{call get_user_orgs(?) }");
+            cs.setInt(1, userID);
+            rs = cs.executeQuery();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+
+    /*
+    public static ResultSet getGroups(int userID, int folderID) {
+        ApplicationDB db = new ApplicationDB();
+        Connection con = db.getConnection();
+        PreparedStatement ps;
+        ResultSet rs = null;
+
+        try {
+            String statement = "SELECT * FROM receipt WHERE user_id=? AND folder_id=?";
+            ps = con.prepareCall(statement);
+            ps.setInt(1, userID);
+            ps.setInt(2, folderID);
+            rs = ps.executeQuery();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return rs;
+    }
+
+     */
+    //Rahuls changes end
 
     public static ResultSet getChildFolders(int folderID) {
         ApplicationDB db = new ApplicationDB();

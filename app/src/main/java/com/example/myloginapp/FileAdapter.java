@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.cardview.widget.CardView;
 
 import com.example.myloginapp.Data.Folder;
+import com.example.myloginapp.Data.Group;
 import com.example.myloginapp.Data.Receipt;
 
 import java.util.List;
@@ -32,8 +33,13 @@ public class FileAdapter extends ArrayAdapter<CardView> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.cardview_file, parent, false);
         }
+        //View convertViewGroup = LayoutInflater.from(getContext()).inflate(R.layout.cardview_group, parent, false);
+
         TextView filename = convertView.findViewById(R.id.file_name);
         ImageView thumbnail = convertView.findViewById(R.id.file_img);
+
+        //TextView groupname = convertViewGroup.findViewById(R.id.group_name);
+        //ImageView groupThumbnail = convertViewGroup.findViewById(R.id.group_img);
 
         Object tag = cardView.getTag();
         if (tag instanceof Receipt) {
@@ -45,9 +51,13 @@ public class FileAdapter extends ArrayAdapter<CardView> {
             thumbnail.setImageBitmap(bitmap);
             thumbnail.setPadding(10,0,10,0);
 
-        } else {
+        } else if (tag instanceof Folder) {
             Folder folder = (Folder) tag;
             filename.setText(folder.getName());
+        } else if (tag instanceof Group) {
+            Group group = (Group) tag;
+            filename.setText(group.getOrgname());
+            thumbnail.setImageResource(R.drawable.baseline_group_account_24);
         }
 
 
